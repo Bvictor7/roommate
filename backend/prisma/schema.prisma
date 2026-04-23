@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  password     String
+  username     String
+  avatar       String?
+  bio          String?
+  tags         String[]
+  createdAt    DateTime @default(now())
+
+  listings     Listing[]
+  colocation   ColocationMember[]
+}
+
+model Listing {
+  id            String   @id @default(uuid())
+  title         String
+  description   String
+  type          String
+  city          String
+  postalCode    String
+  price         Float
+  charges       Float?
+  availableDate DateTime
+  photos        String[]
+  status        String   @default("active")
+  createdAt     DateTime @default(now())
+
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+}
+
+model Colocation {
+  id         String   @id @default(uuid())
+  name       String
+  inviteCode String   @unique @default(uuid())
+  createdAt  DateTime @default(now())
+
+  members    ColocationMember[]
+  tasks      Task[]
+  expenses   Expense[]
+  groceries  GroceryItem[]
+}
+
+model ColocationMember {
+  id           String     @id @default(uuid())
+  role         String     @default("member")
+  userId       String
+  colocationId String
+
+  user         User       @relation(fields: [userId], references: [id])
+  colocation   Colocation @relation(fields: [colocationId], references: [id])
+}
+
+model Task {
+  id           String     @id @default(uuid())
+  title        String
+  assignedTo   String?
+  dueDate      DateTime?
+  status       String     @default("todo")
+  createdAt    DateTime   @default(now())
+
+  colocationId String
+  colocation   Colocation @relation(fields: [colocationId], references: [id])
+}
+
+model Expense {
+  id           String     @id @default(uuid())
+  amount       Float
+  category     String
+  description  String?
+  paidBy       String
+  createdAt    DateTime   @default(now())
+
+  colocationId String
+  colocation   Colocation @relation(fields: [colocationId], references: [id])
+}
+
+model GroceryItem {
+  id           String     @id @default(uuid())
+  name         String
+  isBought     Boolean    @default(false)
+  addedBy      String
+  createdAt    DateTime   @default(now())
+
+  colocationId String
+  colocation   Colocation @relation(fields: [colocationId], references: [id])
+}
