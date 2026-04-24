@@ -5,13 +5,14 @@
 **Application web de colocation** — Trouvez un logement, un colocataire, et gérez votre vie en coloc.
 
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev/)
-[![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Tailwind](https://img.shields.io/badge/Tailwind-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![Node.js](https://img.shields.io/badge/Node.js-20-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
-[![Express](https://img.shields.io/badge/Express-4-000000?logo=express&logoColor=white)](https://expressjs.com/)
-[![Prisma](https://img.shields.io/badge/Prisma-6-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)](https://expressjs.com/)
+[![Prisma](https://img.shields.io/badge/Prisma-5-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![License](https://img.shields.io/badge/License-ISC-green)](LICENSE)
 [![Status](https://img.shields.io/badge/status-MVP%20en%20ligne-success)]()
 
 **[Démo live](https://roommate-cda.netlify.app)** · **[API backend](https://roommate-y4n7.onrender.com)**
@@ -25,6 +26,7 @@
 - [À propos](#à-propos)
 - [Fonctionnalités](#fonctionnalités)
 - [Stack technique](#stack-technique)
+- [Dépendances détaillées](#dépendances-détaillées)
 - [Architecture](#architecture)
 - [Installation locale](#installation-locale)
 - [Scripts utiles](#scripts-utiles)
@@ -58,12 +60,13 @@ Projet personnel développé dans le cadre du **titre professionnel CDA** (Conce
 - Publication d'annonces (CRUD complet)
 - Consultation des annonces avec recherche textuelle
 - Validation des données avec Zod côté backend
+- Rate limiting pour protéger l'authentification
 - Interface responsive (mobile + desktop)
 - API REST structurée avec middlewares d'authentification
 
 ### En cours de développement
 
-- Upload de photos pour les annonces (1 à 5 images WebP)
+- Upload de photos pour les annonces (Multer + Sharp → WebP)
 - Filtres avancés (ville, prix, type, disponibilité)
 - Système de favoris et likes
 - Messagerie interne entre utilisateurs
@@ -76,14 +79,76 @@ Projet personnel développé dans le cadre du **titre professionnel CDA** (Conce
 
 | Couche | Technologies |
 |--------|--------------|
-| **Frontend** | React 19, Vite 6, Tailwind CSS 4, React Router, Axios |
-| **Backend** | Node.js 20, Express, Prisma ORM |
+| **Frontend** | React 19, Vite 8, Tailwind CSS 4, React Router 7 |
+| **Gestion d'état** | Zustand (global) + React Query (serveur) |
+| **Formulaires** | React Hook Form + Zod |
+| **Backend** | Node.js 20, Express 5, Prisma ORM 5 |
 | **Base de données** | PostgreSQL 16 |
 | **Authentification** | JSON Web Tokens (JWT), bcrypt |
-| **Validation** | Zod (schémas partagés front/back) |
-| **Conteneurisation** | Docker, Docker Compose |
-| **CI/CD** | GitHub + déploiement automatique |
+| **Upload & images** | Multer (upload) + Sharp (compression WebP) |
+| **Sécurité** | Rate limiting, CORS configuré, variables d'env |
+| **Conteneurisation** | Docker + Docker Compose |
 | **Hébergement** | Netlify (front) + Render (back + BDD) |
+
+---
+
+## Dépendances détaillées
+
+### Backend — `backend/package.json`
+
+#### Dépendances de production
+
+| Package | Rôle dans le projet |
+|---------|---------------------|
+| `express` | Framework HTTP minimaliste — gère les routes, les middlewares et le cycle requête/réponse |
+| `@prisma/client` | ORM pour interagir avec PostgreSQL en JavaScript (au lieu d'écrire du SQL brut) |
+| `prisma` | CLI Prisma pour gérer les migrations et générer le client typé |
+| `bcrypt` | Hashage sécurisé des mots de passe avec salt avant stockage en base |
+| `jsonwebtoken` | Génération et vérification des tokens JWT pour l'authentification stateless |
+| `zod` | Validation stricte des données entrantes (body, params, query) avec schémas typés |
+| `cors` | Configuration des origines autorisées — essentiel entre Netlify et Render |
+| `dotenv` | Chargement des variables d'environnement depuis le fichier `.env` |
+| `express-rate-limit` | Limite le nombre de requêtes par IP — protège l'authentification contre le brute force |
+| `multer` | Middleware pour gérer l'upload de fichiers (photos d'annonces) |
+| `sharp` | Compression et conversion d'images en WebP pour optimiser les performances |
+| `tsx` | Exécution directe de fichiers TypeScript en développement sans build |
+
+#### Dépendances de développement
+
+| Package | Rôle dans le projet |
+|---------|---------------------|
+| `nodemon` | Redémarre automatiquement le serveur à chaque modification de fichier |
+
+### Frontend — `frontend/package.json`
+
+#### Dépendances de production
+
+| Package | Rôle dans le projet |
+|---------|---------------------|
+| `react` + `react-dom` | Bibliothèque de rendu UI par composants |
+| `react-router-dom` | Routing côté client — gestion des pages (`/`, `/listings`, `/login`…) |
+| `@tanstack/react-query` | Gestion des données serveur — cache, refetch auto, états de chargement |
+| `zustand` | Store global léger — gère l'état d'authentification et les préférences |
+| `axios` | Client HTTP — envoie les requêtes vers l'API Express |
+| `react-hook-form` | Gestion performante des formulaires avec validation |
+| `zod` | Schémas de validation partagés avec le backend (mêmes règles côté client) |
+| `lucide-react` | Bibliothèque d'icônes SVG modernes et légères |
+
+#### Dépendances de développement
+
+| Package | Rôle dans le projet |
+|---------|---------------------|
+| `vite` | Build tool ultra-rapide (Hot Module Replacement quasi instantané) |
+| `@vitejs/plugin-react` | Plugin Vite pour compiler JSX/TSX |
+| `tailwindcss` + `@tailwindcss/postcss` | Framework CSS utility-first pour un styling rapide |
+| `autoprefixer` + `postcss` | Ajoute automatiquement les préfixes navigateurs aux CSS |
+| `eslint` + plugins | Linter pour garder un code propre et cohérent |
+| `@types/react` + `@types/react-dom` | Types TypeScript pour l'auto-complétion dans l'IDE |
+| `globals` | Définitions des variables globales pour ESLint |
+
+### Racine — `package.json`
+
+Les dépendances à la racine (`autoprefixer`, `postcss`, `tailwindcss`) servent à la configuration de Tailwind au niveau monorepo.
 
 ---
 
@@ -100,9 +165,10 @@ Projet personnel développé dans le cadre du **titre professionnel CDA** (Conce
 **Flux d'une requête :**
 
 1. L'utilisateur interagit avec l'interface React
-2. Axios envoie des requêtes HTTP vers l'API Express
-3. Express valide (Zod), authentifie (JWT) et appelle Prisma
+2. React Query ou Axios envoie une requête HTTP vers l'API Express
+3. Express vérifie le rate limit, valide avec Zod et authentifie via JWT
 4. Prisma lit/écrit dans PostgreSQL et renvoie du JSON
+5. Le frontend affiche les données (avec cache React Query)
 
 ---
 
@@ -147,20 +213,19 @@ docker exec -it roommate-backend-1 npx prisma migrate dev
 ### Backend
 
 ```bash
-# Ouvrir un shell dans le conteneur backend
+npm run dev              # Serveur en mode dev (nodemon)
+npm start                # Serveur en mode production
+npm run prisma:generate  # Regénérer le client Prisma
+npm run prisma:migrate   # Créer/appliquer une migration
+```
+
+Dans le conteneur Docker :
+
+```bash
 docker exec -it roommate-backend-1 sh
-
-# Créer une migration après modification du schéma Prisma
 npx prisma migrate dev --name nom_de_la_migration
-
-# Regénérer le client Prisma
-npx prisma generate
-
-# Explorer la base via une UI
-npx prisma studio
-
-# Réinitialiser la base (attention : destructif)
-npx prisma migrate reset
+npx prisma studio        # UI pour explorer la base
+npx prisma migrate reset # Réinitialiser (destructif)
 ```
 
 ### Frontend
@@ -168,9 +233,10 @@ npx prisma migrate reset
 ```bash
 cd frontend
 npm install
-npm run dev      # Serveur de dev
+npm run dev      # Serveur de dev Vite
 npm run build    # Build de production
 npm run preview  # Prévisualiser le build
+npm run lint     # Vérifier le code avec ESLint
 ```
 
 ### Docker
@@ -191,9 +257,9 @@ roommate/
 ├── backend/
 │   ├── src/
 │   │   ├── routes/          # Endpoints Express (auth, listings, users…)
-│   │   ├── middleware/      # Authentification JWT, gestion d'erreurs
+│   │   ├── middleware/      # Auth JWT, gestion d'erreurs, rate limit
 │   │   ├── schemas/         # Schémas de validation Zod
-│   │   └── server.js        # Point d'entrée Express
+│   │   └── index.js         # Point d'entrée Express
 │   ├── prisma/
 │   │   ├── schema.prisma    # Modèle de données
 │   │   └── migrations/      # Historique des migrations
@@ -293,4 +359,4 @@ Projet personnel réalisé dans le cadre du titre professionnel **Concepteur Dé
 
 ## Licence
 
-Ce projet est distribué sous licence MIT. Voir [LICENSE](LICENSE) pour plus d'informations.
+Ce projet est distribué sous licence ISC.
