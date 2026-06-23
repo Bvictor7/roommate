@@ -2,18 +2,55 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-export async function getListings({ city, type, minPrice, maxPrice }) {
-  return prisma.listing.findMany({
-    where: {
-      status: 'active',
-      ...(city && { city: { contains: city, mode: 'insensitive' } }),
-      ...(type && { type }),
-      ...(minPrice && { price: { gte: parseFloat(minPrice) } }),
-      ...(maxPrice && { price: { lte: parseFloat(maxPrice) } }),
-    },
-    include: { user: { select: { id: true, username: true, avatar: true } } },
-    orderBy: { createdAt: 'desc' }
-  })
+const LISTING_CARD_SELECT = {
+  id: true,
+  title: true,
+  type: true,
+  city: true,
+  postalCode: true,
+  price: true,
+  charges: true,
+  availableDate: true,
+  photos: true,
+  status: true,
+  createdAt: true,
+  user: { select: { id: true, username: true, avatar: true } }
+}
+
+const PAGE_SIZE = 12
+
+export async function getListings({ city, type, minPrice, maxPrice, page = 1 }) {
+  const pageNumber = Math.max(1, parseInt(page))
+  const skip = (pageNumber - 1) * PAGE_SIZE
+
+  const where = {
+    status: 'active',
+    ...(city && { city: { contains: city, mode: 'insensitive' } }),
+    ...(type && { type }),
+    ...(minPrice && { price: { gte: parseFloat(minPrice) } }),
+    ...(maxPrice && { price: { lte: parseFloat(maxPrice) } }),
+  }
+
+  const [listings, total] = await Promise.all([
+    prisma.listing.findMany({
+      where,
+      select: LISTING_CARD_SELECT,
+      orderBy: { createdAt: 'desc' },
+      take: PAGE_SIZE,
+      skip
+    }),
+    prisma.listing.count({ where })
+  ])
+
+  return {
+    data: listings,
+    pagination: {
+      page: pageNumber,
+      pageSize: PAGE_SIZE,
+      total,
+      totalPages: Math.ceil(total / PAGE_SIZE)
+    }
+  }
 }
 
 export async function getListingById(id) {
@@ -43,7 +80,10 @@ export async function createListing(data, userId) {
 }
 
 export async function updateListing(id, data, userId) {
-  const listing = await prisma.listing.findUnique({ where: { id } })
+  const listing = await prisma.listing.findUnique({
+    where: { id },
+    select: { userId: true }
+  })
   if (!listing) {
     const error = new Error('Annonce non trouvée')
     error.status = 404
@@ -68,7 +108,10 @@ export async function updateListing(id, data, userId) {
 }
 
 export async function deleteListing(id, userId) {
-  const listing = await prisma.listing.findUnique({ where: { id } })
+  const listing = await prisma.listing.findUnique({
+    where: { id },
+    select: { userId: true }
+  })
   if (!listing) {
     const error = new Error('Annonce non trouvée')
     error.status = 404
