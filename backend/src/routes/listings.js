@@ -1,90 +1,53 @@
 import express from 'express'
-import { PrismaClient } from '@prisma/client'
 import auth from '../middleware/auth.js'
 import validate from '../middleware/validate.js'
 import { listingSchema } from '../schemas/listing.schema.js'
+import * as listingService from '../services/listing.service.js'
 
 const router = express.Router()
-const prisma = new PrismaClient()
 
 router.get('/', async (req, res) => {
-  const { city, type, minPrice, maxPrice } = req.query
-  const listings = await prisma.listing.findMany({
-    where: {
-      status: 'active',
-      ...(city && { city: { contains: city, mode: 'insensitive' } }),
-      ...(type && { type }),
-      ...(minPrice && { price: { gte: parseFloat(minPrice) } }),
-      ...(maxPrice && { price: { lte: parseFloat(maxPrice) } }),
-    },
-    include: { user: { select: { id: true, username: true, avatar: true } } },
-    orderBy: { createdAt: 'desc' }
-  })
-  res.json(listings)
+  try {
+    const listings = await listingService.getListings(req.query)
+    res.json(listings)
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message })
+  }
 })
 
 router.get('/:id', async (req, res) => {
-  const listing = await prisma.listing.findUnique({
-    where: { id: req.params.id },
-    include: { user: { select: { id: true, username: true, avatar: true } } }
-  })
-  if (!listing) return res.status(404).json({ message: 'Annonce non trouvée' })
-  res.json(listing)
+  try {
+    const listing = await listingService.getListingById(req.params.id)
+    res.json(listing)
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message })
+  }
 })
 
 router.post('/', auth, validate(listingSchema), async (req, res) => {
   try {
-    const { title, description, type, city, postalCode, price, charges, availableDate } = req.body
-    const listing = await prisma.listing.create({
-      data: {
-        title, description, type, city, postalCode,
-        price: parseFloat(price),
-        charges: charges ? parseFloat(charges) : null,
-        availableDate: new Date(availableDate),
-        userId: req.user.userId
-      }
-    })
+    const listing = await listingService.createListing(req.body, req.user.userId)
     res.status(201).json(listing)
   } catch (error) {
-    res.status(500).json({ message: 'Erreur lors de la création' })
+    res.status(error.status || 500).json({ message: error.message })
   }
 })
 
 router.put('/:id', auth, validate(listingSchema), async (req, res) => {
   try {
-    const listing = await prisma.listing.findUnique({ where: { id: req.params.id } })
-    
-    if (!listing) return res.status(404).json({ message: 'Annonce non trouvée' })
-    if (listing.userId !== req.user.userId) return res.status(403).json({ message: 'Action interdite : vous n\'êtes pas l\'auteur' })
-
-    const { title, description, type, city, postalCode, price, charges, availableDate } = req.body
-
-    const updated = await prisma.listing.update({
-      where: { id: req.params.id },
-      data: {
-        title, description, type, city, postalCode,
-        price: parseFloat(price),
-        charges: charges ? parseFloat(charges) : null,
-        availableDate: new Date(availableDate)
-      }
-    })
-    res.json(updated)
+    const listing = await listingService.updateListing(req.params.id, req.body, req.user.userId)
+    res.json(listing)
   } catch (error) {
-    res.status(400).json({ message: 'Erreur lors de la modification' })
+    res.status(error.status || 500).json({ message: error.message })
   }
 })
 
 router.delete('/:id', auth, async (req, res) => {
   try {
-    const listing = await prisma.listing.findUnique({ where: { id: req.params.id } })
-    
-    if (!listing) return res.status(404).json({ message: 'Annonce non trouvée' })
-    if (listing.userId !== req.user.userId) return res.status(403).json({ message: 'Action interdite' })
-
-    await prisma.listing.delete({ where: { id: req.params.id } })
+    await listingService.deleteListing(req.params.id, req.user.userId)
     res.json({ message: 'Annonce supprimée avec succès' })
   } catch (error) {
-    res.status(500).json({ message: 'Erreur lors de la suppression' })
+    res.status(error.status || 500).json({ message: error.message })
   }
 })
 
