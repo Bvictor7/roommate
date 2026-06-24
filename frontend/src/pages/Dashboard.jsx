@@ -22,9 +22,9 @@ const depenses = [
 ]
 
 const roommates = [
-  { initials: 'AX', color: 'bg-teal-400 text-[#0f1117]', name: 'Alex' },
-  { initials: 'LD', color: 'bg-purple-400 text-white', name: 'Léa' },
-  { initials: 'TM', color: 'bg-blue-400 text-white', name: 'Thomas' },
+  { initials: 'AX', color: 'bg-teal-700 text-white', name: 'Alex' },
+  { initials: 'LD', color: 'bg-purple-700 text-white', name: 'Léa' },
+  { initials: 'TM', color: 'bg-blue-700 text-white', name: 'Thomas' },
 ]
 
 export default function Dashboard() {

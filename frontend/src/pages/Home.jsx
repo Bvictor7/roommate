@@ -3,21 +3,21 @@ import { Link } from 'react-router-dom'
 const testimonials = [
   {
     initials: 'SC',
-    color: 'bg-emerald-500',
+    color: 'bg-emerald-700',
     name: 'Sarah C.',
     city: 'Paris',
     text: "J'ai trouvé mes colocs en une semaine et on n'a jamais eu une seule dispute sur les comptes.",
   },
   {
     initials: 'TM',
-    color: 'bg-teal-500',
+    color: 'bg-teal-700',
     name: 'Thomas M.',
     city: 'Lyon',
     text: 'Le planning des tâches a sauvé notre coloc. Plus besoin de rappeler à qui le tour.',
   },
   {
     initials: 'LD',
-    color: 'bg-blue-500',
+    color: 'bg-blue-700',
     name: 'Léa D.',
     city: 'Bordeaux',
     text: "Le score d'affinité fait vraiment la différence. Mes colocs sont devenus des amis.",
@@ -27,6 +27,7 @@ const testimonials = [
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#0f1117] text-white">
+      <main>
 
       {/* Hero */}
       <section className="w-full max-w-4xl mx-auto text-center px-4 sm:px-6 pt-16 sm:pt-24 pb-12 sm:pb-16">
@@ -64,7 +65,7 @@ export default function Home() {
       <section className="max-w-2xl mx-auto px-4 sm:px-6 pb-16 sm:pb-20">
         <div className="bg-[#1a1d27] rounded-2xl border border-white/10 p-4 sm:p-6 grid grid-cols-2 gap-4">
           <div>
-            <p className="text-xs text-white/40 uppercase tracking-widest mb-3">Tâches de la semaine</p>
+            <p className="text-xs text-white/60 uppercase tracking-widest mb-3">Tâches de la semaine</p>
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-1">
                 <div className="flex items-center gap-1.5 min-w-0">
@@ -81,7 +82,7 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <span className="text-xs sm:text-sm text-white/40 line-through truncate">Julie · Ménage salon</span>
+                <span className="text-xs sm:text-sm text-white/60 line-through truncate">Julie · Ménage salon</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <div className="w-4 h-4 rounded border border-white/20 shrink-0"></div>
@@ -90,7 +91,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-l border-white/10 pl-4">
-            <p className="text-xs text-white/40 uppercase tracking-widest mb-3">Solde</p>
+            <p className="text-xs text-white/60 uppercase tracking-widest mb-3">Solde</p>
             <p className="text-white/60 text-xs sm:text-sm">Sarah vous doit</p>
             <p className="text-2xl sm:text-3xl font-bold text-teal-400">14,50 €</p>
           </div>
@@ -114,7 +115,7 @@ export default function Home() {
             <div className="space-y-3">
               {[
                 { initials: 'JL', color: 'bg-purple-500', name: 'Julie L.', sub: 'Paris 11e · Calme, cuisine', score: '92%' },
-                { initials: 'TM', color: 'bg-teal-500', name: 'Thomas M.', sub: 'Lyon 3e · Sportif, sociable', score: '87%' },
+                { initials: 'TM', color: 'bg-teal-700', name: 'Thomas M.', sub: 'Lyon 3e · Sportif, sociable', score: '87%' },
               ].map((p) => (
                 <div key={p.initials} className="flex items-center justify-between bg-white/5 rounded-xl px-3 sm:px-4 py-3">
                   <div className="flex items-center gap-3 min-w-0">
@@ -123,7 +124,7 @@ export default function Home() {
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm font-medium">{p.name}</p>
-                      <p className="text-xs text-white/40 truncate">{p.sub}</p>
+                      <p className="text-xs text-white/60 truncate">{p.sub}</p>
                     </div>
                   </div>
                   <span className="text-teal-400 font-bold text-sm shrink-0 ml-2">{p.score}</span>
@@ -190,7 +191,7 @@ export default function Home() {
                 </div>
                 <div>
                   <p className="text-sm font-medium">{t.name}</p>
-                  <p className="text-xs text-white/40">{t.city}</p>
+                  <p className="text-xs text-white/60">{t.city}</p>
                 </div>
               </div>
             </div>
@@ -198,9 +199,11 @@ export default function Home() {
         </div>
       </section>
 
+      </main>
+
       {/* Footer */}
       <footer className="border-t border-white/10 py-6 px-4 sm:px-8">
-        <div className="max-w-5xl mx-auto flex items-center justify-center gap-6 text-xs text-white/40">
+        <div className="max-w-5xl mx-auto flex items-center justify-center gap-6 text-xs text-white/60">
           <a href="#" className="hover:text-white transition">CGU</a>
           <a href="#" className="hover:text-white transition">Confidentialité</a>
           <a href="#" className="hover:text-white transition">Cookies</a>

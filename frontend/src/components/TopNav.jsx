@@ -58,7 +58,7 @@ export default function TopNav() {
               <Link
                 to="/profile"
                 aria-label={`Profil de ${user.username}`}
-                className="w-8 h-8 rounded-full bg-teal-400 flex items-center justify-center text-xs font-bold text-[#0f1117] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400"
+                className="w-8 h-8 rounded-full bg-teal-700 flex items-center justify-center text-xs font-bold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400"
               >
                 <span aria-hidden="true">{user.username?.[0]?.toUpperCase() || 'U'}</span>
               </Link>
