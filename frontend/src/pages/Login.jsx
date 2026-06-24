@@ -27,7 +27,7 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-56px)] bg-[#0f1117] flex items-center justify-center px-4 py-12">
+    <main className="min-h-[calc(100vh-56px)] bg-[#0f1117] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-white">Connexion</h1>
@@ -36,36 +36,40 @@ export default function Login() {
 
         <div className="bg-[#1a1d27] rounded-2xl border border-white/10 p-6 sm:p-8 space-y-5">
           {error && (
-            <div className="bg-red-500/10 text-red-400 text-sm p-4 rounded-xl border border-red-500/20">
+            <div role="alert" aria-live="polite" className="bg-red-500/10 text-red-400 text-sm p-4 rounded-xl border border-red-500/20">
               {error}
             </div>
           )}
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-white/70">Email</label>
+            <label htmlFor="email" className="text-sm font-medium text-white/70">Email</label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-white/30 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Mail aria-hidden="true" className="w-4 h-4 text-white/30 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
+                id="email"
                 type="email"
                 required
+                autoComplete="email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 outline-none focus:border-teal-400 transition text-sm"
+                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 outline-none focus:border-teal-400 focus-visible:ring-2 focus-visible:ring-teal-400 transition text-sm"
                 placeholder="nom@exemple.com"
               />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-white/70">Mot de passe</label>
+            <label htmlFor="password" className="text-sm font-medium text-white/70">Mot de passe</label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-white/30 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Lock aria-hidden="true" className="w-4 h-4 text-white/30 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
+                id="password"
                 type="password"
                 required
+                autoComplete="current-password"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 outline-none focus:border-teal-400 transition text-sm"
+                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 outline-none focus:border-teal-400 focus-visible:ring-2 focus-visible:ring-teal-400 transition text-sm"
                 placeholder="••••••••"
               />
             </div>
@@ -74,19 +78,20 @@ export default function Login() {
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="w-full py-3 bg-teal-400 text-[#0f1117] rounded-xl font-bold hover:bg-teal-300 transition disabled:opacity-50 text-sm"
+            aria-busy={loading}
+            className="w-full py-3 bg-teal-400 text-[#0f1117] rounded-xl font-bold hover:bg-teal-300 transition disabled:opacity-50 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
           >
             {loading ? 'Vérification...' : 'Se connecter'}
           </button>
 
           <p className="text-center text-sm text-white/40 pt-1">
             Nouveau ici ?{' '}
-            <Link to="/register" className="text-teal-400 hover:text-teal-300 font-medium transition">
+            <Link to="/register" className="text-teal-400 hover:text-teal-300 font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 rounded">
               Créer un compte
             </Link>
           </p>
         </div>
       </div>
-    </div>
+    </main>
   )
 }
