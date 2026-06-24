@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
-import Navbar from './components/Navbar'
+import TopNav from './components/TopNav'
 import Home from './pages/Home'
 import Listings from './pages/Listings'
 import Login from './pages/Login'
@@ -10,38 +10,28 @@ import Profile from './pages/Profile'
 import EditListing from './pages/EditListing'
 import Dashboard from './pages/Dashboard'
 
+function Layout({ children }) {
+  return (
+    <div className="min-h-screen bg-[#0f1117]">
+      <TopNav />
+      {children}
+    </div>
+  )
+}
+
 function App() {
   return (
     <Router>
       <AuthProvider>
         <Routes>
-          {/* Landing : pas de Navbar globale, elle a la sienne */}
-          <Route path="/" element={<Home />} />
-
-          {/* Dashboard : pas de Navbar globale, sidebar intégrée */}
-          <Route path="/dashboard/*" element={<Dashboard />} />
-
-          {/* Recherche : pas de Navbar, layout plein écran */}
-          <Route path="/listings" element={<Listings />} />
-
-          {/* Pages avec Navbar standard */}
-          <Route
-            path="*"
-            element={
-              <div className="min-h-screen bg-slate-50">
-                <Navbar />
-                <main className="container mx-auto px-4 py-8">
-                  <Routes>
-                    <Route path="/create-listing" element={<CreateListing />} />
-                    <Route path="/edit-listing/:id" element={<EditListing />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/profile" element={<Profile />} />
-                  </Routes>
-                </main>
-              </div>
-            }
-          />
+          <Route path="/" element={<Layout><Home /></Layout>} />
+          <Route path="/listings" element={<Layout><Listings /></Layout>} />
+          <Route path="/dashboard/*" element={<Layout><Dashboard /></Layout>} />
+          <Route path="/login" element={<Layout><Login /></Layout>} />
+          <Route path="/register" element={<Layout><Register /></Layout>} />
+          <Route path="/create-listing" element={<Layout><CreateListing /></Layout>} />
+          <Route path="/edit-listing/:id" element={<Layout><EditListing /></Layout>} />
+          <Route path="/profile" element={<Layout><Profile /></Layout>} />
         </Routes>
       </AuthProvider>
     </Router>

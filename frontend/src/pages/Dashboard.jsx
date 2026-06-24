@@ -21,8 +21,6 @@ const depenses = [
   { icon: '⚡', label: 'Électricité', by: 'Léa', amount: '80,00 €' },
 ]
 
-const courses = ["Lait d'avoine", 'Éponges', 'Café']
-
 const roommates = [
   { initials: 'AX', color: 'bg-teal-400 text-[#0f1117]' },
   { initials: 'LD', color: 'bg-purple-400 text-white' },
@@ -32,8 +30,9 @@ const roommates = [
 export default function Dashboard() {
   const location = useLocation()
   const [taskList, setTaskList] = useState(tasks)
-  const [courseList, setCourseList] = useState(courses)
+  const [courseList, setCourseList] = useState(["Lait d'avoine", 'Éponges', 'Café'])
   const [newCourse, setNewCourse] = useState('')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const toggleTask = (id) => {
     setTaskList(taskList.map(t => t.id === id ? { ...t, done: !t.done } : t))
@@ -47,17 +46,23 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
+    <div className="flex bg-slate-50 overflow-hidden" style={{ minHeight: 'calc(100vh - 56px)' }}>
+
+      {/* Overlay mobile */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-20 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col">
-        {/* Logo */}
-        <div className="flex items-center gap-2 px-5 py-5 border-b border-slate-100">
-          <div className="w-8 h-8 rounded-lg bg-teal-400 flex items-center justify-center font-bold text-[#0f1117] text-sm">R</div>
-          <span className="font-bold text-slate-900">RoomMate</span>
-        </div>
-
-        {/* Coloc selector */}
+      <aside className={`
+        fixed lg:static inset-y-0 left-0 z-30
+        w-64 bg-white border-r border-slate-200 flex flex-col
+        transform transition-transform duration-200
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `} style={{ top: '56px', height: 'calc(100vh - 56px)' }}>
         <div className="px-4 py-3 border-b border-slate-100">
           <div className="flex items-center justify-between bg-slate-50 rounded-xl px-3 py-2">
             <div className="flex items-center gap-2">
@@ -68,18 +73,16 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-1">
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const active = location.pathname === item.path
             return (
               <Link
                 key={item.path}
                 to={item.path}
+                onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition ${
-                  active
-                    ? 'bg-blue-600 text-white'
-                    : 'text-slate-600 hover:bg-slate-100'
+                  active ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
                 }`}
               >
                 <span className="text-base">{item.icon}</span>
@@ -89,27 +92,33 @@ export default function Dashboard() {
           })}
         </nav>
 
-        {/* User */}
         <div className="px-4 py-4 border-t border-slate-100 flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-teal-400 flex items-center justify-center text-xs font-bold text-[#0f1117]">AX</div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-slate-800">Alex</p>
             <p className="text-xs text-slate-400 truncate">alex@roommate.fr</p>
           </div>
-          <button className="text-slate-400 hover:text-slate-600 text-lg">⏻</button>
         </div>
       </aside>
 
       {/* Main */}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto min-w-0">
         {/* Header */}
-        <div className="flex items-center justify-between px-8 py-6">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">Bonjour Alex ! 👋</h1>
-            <p className="text-slate-500 text-sm mt-0.5">Voici l'état du Loft aujourd'hui.</p>
-          </div>
+        <div className="flex items-center justify-between px-4 sm:px-8 py-5 sm:py-6 gap-3">
           <div className="flex items-center gap-3">
-            <button className="text-slate-400 hover:text-slate-600 text-xl">🔔</button>
+            <button
+              className="lg:hidden text-slate-500 text-xl"
+              onClick={() => setSidebarOpen(true)}
+            >
+              ☰
+            </button>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Bonjour Alex ! 👋</h1>
+              <p className="text-slate-500 text-sm mt-0.5 hidden sm:block">Voici l'état du Loft aujourd'hui.</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button className="text-slate-400 text-xl">🔔</button>
             <div className="flex -space-x-2">
               {roommates.map((r) => (
                 <div key={r.initials} className={`w-8 h-8 rounded-full ${r.color} border-2 border-white flex items-center justify-center text-xs font-bold`}>
@@ -121,10 +130,10 @@ export default function Dashboard() {
         </div>
 
         {/* Content grid */}
-        <div className="px-8 pb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="px-4 sm:px-8 pb-8 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
 
           {/* Tâches */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6">
             <div className="flex items-center justify-between mb-5">
               <h2 className="font-bold text-slate-900">Tâches du jour</h2>
               <button className="text-blue-600 text-sm font-medium">+ Ajouter</button>
@@ -134,47 +143,41 @@ export default function Dashboard() {
                 <div
                   key={task.id}
                   onClick={() => toggleTask(task.id)}
-                  className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition ${
-                    task.done
-                      ? 'bg-emerald-50 border-emerald-100'
-                      : task.urgent
-                      ? 'bg-red-50 border-red-100'
-                      : 'bg-slate-50 border-slate-100'
+                  className={`flex items-center justify-between p-3 sm:p-4 rounded-xl border cursor-pointer transition ${
+                    task.done ? 'bg-emerald-50 border-emerald-100'
+                    : task.urgent ? 'bg-red-50 border-red-100'
+                    : 'bg-slate-50 border-slate-100'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center ${
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 ${
                       task.done ? 'bg-emerald-500 border-emerald-500' : task.urgent ? 'border-red-400' : 'border-slate-300'
                     }`}>
                       {task.done && <span className="text-white text-xs">✓</span>}
                     </div>
-                    <div>
-                      <p className={`text-sm font-medium ${task.done ? 'line-through text-slate-400' : 'text-slate-800'}`}>
+                    <div className="min-w-0">
+                      <p className={`text-sm font-medium truncate ${task.done ? 'line-through text-slate-400' : 'text-slate-800'}`}>
                         {task.label}
                       </p>
                       <p className="text-xs text-slate-400">Assigné à {task.assignee}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    {task.done ? (
-                      <span className="text-xs text-emerald-600 font-medium">Terminé</span>
-                    ) : (
-                      <span className={`text-xs font-medium ${task.urgent ? 'text-red-500' : 'text-slate-400'}`}>
-                        {task.due} {task.urgent ? '🔔' : ''}
-                      </span>
-                    )}
-                  </div>
+                  <span className={`text-xs font-medium shrink-0 ml-2 ${
+                    task.done ? 'text-emerald-600' : task.urgent ? 'text-red-500' : 'text-slate-400'
+                  }`}>
+                    {task.done ? 'Terminé' : task.due} {task.urgent && !task.done ? '🔔' : ''}
+                  </span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Dépenses */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6">
             <h2 className="font-bold text-slate-900 mb-5">Qui doit combien ?</h2>
             <div className="bg-blue-50 rounded-xl p-4 mb-4">
               <p className="text-slate-500 text-sm">Votre solde total</p>
-              <p className="text-2xl font-bold text-blue-600 mt-1">Vous devez 12,00 €</p>
+              <p className="text-xl sm:text-2xl font-bold text-blue-600 mt-1">Vous devez 12,00 €</p>
             </div>
             <button className="w-full bg-blue-600 text-white py-2.5 rounded-xl text-sm font-semibold mb-4 hover:bg-blue-700 transition">
               + Ajouter une dépense
@@ -182,21 +185,21 @@ export default function Dashboard() {
             <div className="space-y-3">
               {depenses.map((d) => (
                 <div key={d.label} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-base">{d.icon}</div>
-                    <div>
-                      <p className="text-sm font-medium text-slate-800">{d.label}</p>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-base shrink-0">{d.icon}</div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-slate-800 truncate">{d.label}</p>
                       <p className="text-xs text-slate-400">{d.by}</p>
                     </div>
                   </div>
-                  <span className="text-sm font-semibold text-slate-700">{d.amount}</span>
+                  <span className="text-sm font-semibold text-slate-700 shrink-0 ml-2">{d.amount}</span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Liste de courses */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 lg:col-span-2 max-w-xl">
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 lg:col-span-2">
             <div className="flex items-center justify-between mb-5">
               <h2 className="font-bold text-slate-900">Liste de courses</h2>
               <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-medium">Partagée</span>
@@ -204,7 +207,7 @@ export default function Dashboard() {
             <div className="space-y-3 mb-4">
               {courseList.map((item, i) => (
                 <div key={i} className="flex items-center gap-3">
-                  <div className="w-4 h-4 rounded border border-slate-300"></div>
+                  <div className="w-4 h-4 rounded border border-slate-300 shrink-0"></div>
                   <span className="text-sm text-slate-700">{item}</span>
                 </div>
               ))}
@@ -220,7 +223,7 @@ export default function Dashboard() {
               />
               <button
                 onClick={addCourse}
-                className="w-9 h-9 bg-teal-400 text-[#0f1117] rounded-xl font-bold text-lg flex items-center justify-center hover:bg-teal-300 transition"
+                className="w-9 h-9 bg-teal-400 text-[#0f1117] rounded-xl font-bold text-lg flex items-center justify-center hover:bg-teal-300 transition shrink-0"
               >
                 +
               </button>
