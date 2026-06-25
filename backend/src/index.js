@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import rateLimit from 'express-rate-limit'
 import authRoutes from './routes/auth.js'
 import listingRoutes from './routes/listings.js'
+import errorHandler from './middleware/errorHandler.js'
 
 dotenv.config()
 
@@ -19,10 +20,15 @@ app.use(limiter)
 app.use('/api/auth', authRoutes)
 app.use('/api/listings', listingRoutes)
 
-
 app.get('/', (req, res) => {
   res.json({ message: 'RoomMate API is running' })
 })
+
+app.use((req, res) => {
+  res.status(404).json({ message: 'Route non trouvée' })
+})
+
+app.use(errorHandler)
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
