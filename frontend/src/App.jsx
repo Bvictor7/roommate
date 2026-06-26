@@ -9,6 +9,7 @@ import CreateListing from './pages/CreateListing'
 import Profile from './pages/Profile'
 import EditListing from './pages/EditListing'
 import Dashboard from './pages/Dashboard'
+import OAuthCallback from './pages/OAuthCallback'
 
 function Layout({ children }) {
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route path="/create-listing" element={<Layout><CreateListing /></Layout>} />
           <Route path="/edit-listing/:id" element={<Layout><EditListing /></Layout>} />
           <Route path="/profile" element={<Layout><Profile /></Layout>} />
+          <Route path="/oauth/callback" element={<OAuthCallback />} />
         </Routes>
       </AuthProvider>
     </Router>

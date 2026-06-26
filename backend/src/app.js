@@ -3,8 +3,10 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import rateLimit from 'express-rate-limit'
 import morgan from 'morgan'
+import passport from './config/passport.js'
 import authRoutes from './routes/auth.js'
 import listingRoutes from './routes/listings.js'
+import oauthRoutes from './routes/oauth.js'
 import errorHandler from './middleware/errorHandler.js'
 
 dotenv.config()
@@ -22,7 +24,10 @@ if (process.env.NODE_ENV !== 'test') {
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 })
 app.use(limiter)
 
+app.use(passport.initialize())
+
 app.use('/api/auth', authRoutes)
+app.use('/api/auth', oauthRoutes)
 app.use('/api/listings', listingRoutes)
 
 app.get('/', (req, res) => {
