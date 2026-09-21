@@ -7,6 +7,7 @@ services:
       - "5000:5000"
     environment:
       - DATABASE_URL=postgresql://roommate:password@db:5432/roommate_db
+      - PORT=5000
       - JWT_SECRET=${JWT_SECRET}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
       - NODE_ENV=development
@@ -21,7 +22,7 @@ services:
     ports:
       - "5173:5173"
     environment:
-      - VITE_API_URL=http://localhost:5000
+      - VITE_API_URL=http://localhost:5000/api
     depends_on:
       - backend
     volumes:

@@ -7,6 +7,7 @@ import passport from './config/passport.js'
 import authRoutes from './routes/auth.js'
 import listingRoutes from './routes/listings.js'
 import oauthRoutes from './routes/oauth.js'
+import colocationRoutes from './routes/colocation.js'
 import errorHandler from './middleware/errorHandler.js'
 
 dotenv.config()
@@ -29,6 +30,7 @@ app.use(passport.initialize())
 app.use('/api/auth', authRoutes)
 app.use('/api/auth', oauthRoutes)
 app.use('/api/listings', listingRoutes)
+app.use('/api/colocation', colocationRoutes)
 
 app.get('/', (req, res) => {
   res.json({ message: 'RoomMate API is running' })

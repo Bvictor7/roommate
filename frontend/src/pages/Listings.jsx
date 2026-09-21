@@ -36,7 +36,7 @@ export default function Listings() {
   const fetchListings = async () => {
     try {
       const res = await api.get('/listings')
-      setListings(res.data)
+      setListings(res.data.data)
     } catch (err) {
       console.error('Erreur chargement annonces:', err)
     } finally {

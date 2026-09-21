@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit'
 import morgan from 'morgan'
 import authRoutes from './routes/auth.js'
 import listingRoutes from './routes/listings.js'
+import colocationRoutes from './routes/colocations.js'
 import errorHandler from './middleware/errorHandler.js'
 
 dotenv.config()
@@ -23,6 +24,7 @@ app.use(limiter)
 
 app.use('/api/auth', authRoutes)
 app.use('/api/listings', listingRoutes)
+app.use('/api/colocations', colocationRoutes)
 
 app.get('/', (req, res) => {
   res.json({ message: 'RoomMate API is running' })
@@ -34,6 +36,11 @@ app.use((req, res) => {
 
 app.use(errorHandler)
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`[${new Date().toISOString()}] Server running on port ${PORT}`)
+})
+
+server.on('error', (err) => {
+  console.error('Server error:', err.message)
+  process.exit(1)
 })
