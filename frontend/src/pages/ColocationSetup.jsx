@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Home, Users, Copy, Check } from 'lucide-react'
 import api from '../services/api'
 
 export default function ColocationSetup() {
@@ -11,13 +10,7 @@ export default function ColocationSetup() {
   const [loading, setLoading] = useState(false)
   const [createdCode, setCreatedCode] = useState('')
   const [copied, setCopied] = useState(false)
-  const [joinedColocationName, setJoinedColocationName] = useState('')
   const navigate = useNavigate()
-
-  const switchMode = (newMode) => {
-    setMode(newMode)
-    setError('')
-  }
 
   const handleCreate = async (e) => {
     e.preventDefault()
@@ -27,7 +20,7 @@ export default function ColocationSetup() {
       const res = await api.post('/colocation', { name })
       setCreatedCode(res.data.inviteCode)
     } catch (err) {
-      setError(err.response?.data?.message || 'Erreur lors de la création de la colocation')
+      setError(err.response?.data?.message || 'Erreur lors de la création')
     } finally {
       setLoading(false)
     }
@@ -38,149 +31,106 @@ export default function ColocationSetup() {
     setError('')
     setLoading(true)
     try {
-      const res = await api.post('/colocation/join', { inviteCode })
-      const colocation = await api.get(`/colocation/${res.data.colocationId}`)
-      setJoinedColocationName(colocation.data.name)
+      await api.post('/colocation/join', { inviteCode })
+      navigate('/dashboard')
     } catch (err) {
-      setError(err.response?.data?.message || 'Code d\'invitation invalide')
+      setError(err.response?.data?.message || 'Code invalide')
     } finally {
       setLoading(false)
     }
   }
 
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(createdCode)
+  const handleCopy = () => {
+    navigator.clipboard.writeText(createdCode)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
 
-  if (createdCode) {
-    return (
-      <main className="min-h-[calc(100vh-56px)] bg-[#0f1117] flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-white">Colocation créée !</h1>
-            <p className="text-white/50 mt-2">Partagez ce code pour inviter vos colocataires</p>
-          </div>
-
-          <div className="bg-[#1a1d27] rounded-2xl border border-white/10 p-6 sm:p-8 space-y-5">
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-white/70">Code d'invitation</label>
-              <div className="flex items-center gap-2">
-                <div className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm font-mono truncate">
-                  {createdCode}
-                </div>
-                <button
-                  onClick={handleCopy}
-                  aria-label="Copier le code"
-                  className="p-3 bg-white/5 border border-white/10 rounded-xl text-white/70 hover:text-white hover:border-teal-400 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400"
-                >
-                  {copied ? <Check className="w-4 h-4 text-teal-400" /> : <Copy className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  if (joinedColocationName) {
-    return (
-      <main className="min-h-[calc(100vh-56px)] bg-[#0f1117] flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-white">Bienvenue !</h1>
-            <p className="text-white/50 mt-2">Vous avez rejoint {joinedColocationName} !</p>
-          </div>
-
-          <div className="bg-[#1a1d27] rounded-2xl border border-white/10 p-6 sm:p-8">
-            <button
-              onClick={() => navigate('/dashboard')}
-              className="w-full py-3 bg-teal-400 text-[#0f1117] rounded-xl font-bold hover:bg-teal-300 transition text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
-            >
-              Aller au Dashboard
-            </button>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
   return (
-    <main className="min-h-[calc(100vh-56px)] bg-[#0f1117] flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-white">Votre colocation</h1>
-          <p className="text-white/50 mt-2">Créez une colocation ou rejoignez-en une</p>
-        </div>
+    <main style={{ minHeight: 'calc(100vh - 56px)', background: '#F4EEE2', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px clamp(14px,3vw,34px)', fontFamily: 'Karla, system-ui, sans-serif', color: '#2A2723' }}>
+      <div style={{ width: '100%', maxWidth: 440 }}>
+        <h1 style={{ fontFamily: 'Newsreader, serif', fontWeight: 500, fontSize: 'clamp(28px,4vw,38px)', margin: '0 0 6px', letterSpacing: '-.02em' }}>
+          Votre colocation
+        </h1>
+        <p style={{ margin: '0 0 28px', fontSize: 16, color: '#6B655A' }}>Créez une colocation ou rejoignez-en une</p>
 
-        <div className="bg-[#1a1d27] rounded-2xl border border-white/10 p-6 sm:p-8 space-y-5">
-          <div className="flex bg-white/5 rounded-xl p-1 gap-1">
+        <div style={{ background: '#FBF7EE', border: '1px solid #2A2723', padding: 'clamp(20px,3vw,32px)' }}>
+
+          {/* Tabs */}
+          <div style={{ display: 'flex', gap: 0, marginBottom: 24 }}>
             <button
-              onClick={() => switchMode('create')}
-              className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition flex items-center justify-center gap-2 ${
-                mode === 'create' ? 'bg-teal-400 text-[#0f1117]' : 'text-white/60 hover:text-white'
-              }`}
+              onClick={() => setMode('create')}
+              style={{ flex: 1, padding: '10px 0', background: mode === 'create' ? '#2A2723' : 'transparent', color: mode === 'create' ? '#F4EEE2' : '#2A2723', border: '1px solid #2A2723', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'Karla, sans-serif' }}
             >
-              <Home className="w-4 h-4" />
               Créer
             </button>
             <button
-              onClick={() => switchMode('join')}
-              className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition flex items-center justify-center gap-2 ${
-                mode === 'join' ? 'bg-teal-400 text-[#0f1117]' : 'text-white/60 hover:text-white'
-              }`}
+              onClick={() => setMode('join')}
+              style={{ flex: 1, padding: '10px 0', background: mode === 'join' ? '#2A2723' : 'transparent', color: mode === 'join' ? '#F4EEE2' : '#2A2723', border: '1px solid #2A2723', borderLeft: 'none', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'Karla, sans-serif' }}
             >
-              <Users className="w-4 h-4" />
               Rejoindre
             </button>
           </div>
 
           {error && (
-            <div role="alert" aria-live="polite" className="bg-red-500/10 text-red-400 text-sm p-4 rounded-xl border border-red-500/20">
+            <div role="alert" style={{ background: '#F5E8E5', border: '1px solid #B4472C', color: '#B4472C', fontSize: 14, padding: '10px 14px', marginBottom: 16 }}>
               {error}
             </div>
           )}
 
-          {mode === 'create' ? (
-            <div className="space-y-1.5">
-              <label htmlFor="name" className="text-sm font-medium text-white/70">Nom de la colocation</label>
-              <input
-                id="name"
-                type="text"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 outline-none focus:border-teal-400 focus-visible:ring-2 focus-visible:ring-teal-400 transition text-sm"
-                placeholder="Coloc Paris 11e"
-              />
+          {/* Code créé */}
+          {createdCode ? (
+            <div>
+              <p style={{ fontSize: 15, marginBottom: 16, lineHeight: 1.5 }}>
+                Foyer créé ! Partagez ce code avec vos colocataires :
+              </p>
+              <div style={{ background: '#F4EEE2', border: '1px solid #2A2723', padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 16 }}>
+                <span style={{ fontFamily: "'Cutive Mono', monospace", fontSize: 14, wordBreak: 'break-all', color: '#2A2723' }}>{createdCode}</span>
+                <button onClick={handleCopy} style={{ background: copied ? '#1F4438' : '#2A2723', color: '#F4EEE2', border: 'none', padding: '8px 14px', cursor: 'pointer', fontSize: 13, fontFamily: 'Karla, sans-serif', flexShrink: 0 }}>
+                  {copied ? '✓ Copié' : 'Copier'}
+                </button>
+              </div>
+              <button onClick={() => navigate('/dashboard')} style={{ width: '100%', padding: '12px 0', background: '#B4472C', color: '#F9F5EC', fontSize: 16, fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: 'Karla, sans-serif' }}>
+                Accéder au foyer
+              </button>
             </div>
+          ) : mode === 'create' ? (
+            <form onSubmit={handleCreate}>
+              <div style={{ marginBottom: 20 }}>
+                <label htmlFor="name" style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Nom de la colocation</label>
+                <input
+                  id="name"
+                  type="text"
+                  required
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  placeholder="Ex: Coloc Paris 11e"
+                  style={{ width: '100%', padding: '10px 12px', border: '1px solid #2A2723', background: '#F4EEE2', fontSize: 15, fontFamily: 'Karla, sans-serif', color: '#2A2723', outline: 'none', boxSizing: 'border-box' }}
+                />
+              </div>
+              <button type="submit" disabled={loading} style={{ width: '100%', padding: '12px 0', background: '#B4472C', color: '#F9F5EC', fontSize: 16, fontWeight: 700, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'Karla, sans-serif', opacity: loading ? 0.7 : 1 }}>
+                {loading ? 'Création...' : 'Créer ma colocation'}
+              </button>
+            </form>
           ) : (
-            <div className="space-y-1.5">
-              <label htmlFor="inviteCode" className="text-sm font-medium text-white/70">Code d'invitation</label>
-              <input
-                id="inviteCode"
-                type="text"
-                required
-                value={inviteCode}
-                onChange={(e) => setInviteCode(e.target.value)}
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 outline-none focus:border-teal-400 focus-visible:ring-2 focus-visible:ring-teal-400 transition text-sm"
-                placeholder="Collez le code reçu"
-              />
-            </div>
+            <form onSubmit={handleJoin}>
+              <div style={{ marginBottom: 20 }}>
+                <label htmlFor="code" style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Code d'invitation</label>
+                <input
+                  id="code"
+                  type="text"
+                  required
+                  value={inviteCode}
+                  onChange={e => setInviteCode(e.target.value)}
+                  placeholder="Collez le code ici"
+                  style={{ width: '100%', padding: '10px 12px', border: '1px solid #2A2723', background: '#F4EEE2', fontSize: 15, fontFamily: 'Karla, sans-serif', color: '#2A2723', outline: 'none', boxSizing: 'border-box' }}
+                />
+              </div>
+              <button type="submit" disabled={loading} style={{ width: '100%', padding: '12px 0', background: '#B4472C', color: '#F9F5EC', fontSize: 16, fontWeight: 700, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'Karla, sans-serif', opacity: loading ? 0.7 : 1 }}>
+                {loading ? 'Connexion...' : 'Rejoindre le foyer'}
+              </button>
+            </form>
           )}
-
-          <button
-            onClick={mode === 'create' ? handleCreate : handleJoin}
-            disabled={loading}
-            aria-busy={loading}
-            className="w-full py-3 bg-teal-400 text-[#0f1117] rounded-xl font-bold hover:bg-teal-300 transition disabled:opacity-50 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
-          >
-            {loading
-              ? 'Chargement...'
-              : mode === 'create' ? 'Créer ma colocation' : 'Rejoindre'}
-          </button>
         </div>
       </div>
     </main>
