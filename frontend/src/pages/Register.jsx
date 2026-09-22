@@ -2,20 +2,25 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { Mail, Lock, User } from 'lucide-react'
 import api from '../services/api'
+import { useAuth } from '../context/AuthContext'
 
 export default function Register() {
   const [form, setForm] = useState({ email: '', password: '', username: '' })
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setLoading(true)
     try {
-      await api.post('/auth/register', form)
-      navigate('/login')
+      const res = await api.post('/auth/register', form)
+      login(res.data.token, res.data.user)
+      setSuccess(true)
+      setTimeout(() => navigate('/dashboard'), 1500)
     } catch (err) {
       setError(err.response?.data?.message || 'Erreur lors de la création du compte')
     } finally {
@@ -32,6 +37,13 @@ export default function Register() {
         </div>
 
         <div className="bg-[#1a1d27] rounded-2xl border border-white/10 p-6 sm:p-8 space-y-5">
+          {success && (
+            <div role="alert" aria-live="polite" className="bg-teal-500/10 text-teal-400 text-sm p-4 rounded-xl border border-teal-500/20 flex items-center gap-2">
+              <span>✓</span>
+              <span>Compte créé avec succès ! Redirection en cours...</span>
+            </div>
+          )}
+
           {error && (
             <div role="alert" aria-live="polite" className="bg-red-500/10 text-red-400 text-sm p-4 rounded-xl border border-red-500/20">
               {error}
@@ -81,22 +93,22 @@ export default function Register() {
                 type="password"
                 required
                 autoComplete="new-password"
-                minLength={8}
+                minLength={6}
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 outline-none focus:border-teal-400 focus-visible:ring-2 focus-visible:ring-teal-400 transition text-sm"
-                placeholder="Min. 8 caractères"
+                placeholder="Min. 6 caractères"
               />
             </div>
           </div>
 
           <button
             onClick={handleSubmit}
-            disabled={loading}
+            disabled={loading || success}
             aria-busy={loading}
             className="w-full py-3 bg-teal-400 text-[#0f1117] rounded-xl font-bold hover:bg-teal-300 transition disabled:opacity-50 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
           >
-            {loading ? 'Création...' : "S'inscrire"}
+            {loading ? 'Création...' : success ? 'Compte créé ✓' : "S'inscrire"}
           </button>
 
           <p className="text-center text-sm text-white/40 pt-1">
