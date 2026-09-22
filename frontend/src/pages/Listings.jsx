@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import api from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import ListingsMap from '../components/ListingsMap'
 
 const filters = ['Toulouse', '≤ 500 €', 'Meublé', 'Dispo. en octobre', 'Animaux OK']
 
@@ -86,6 +87,13 @@ export default function Listings() {
 
         <div style={{ height: 1, background: '#2A2723', margin: 'clamp(18px,3vw,28px) 0 0' }} />
 
+        {/* Carte interactive */}
+        <div style={{ margin: 'clamp(18px,3vw,28px) 0' }}>
+          <ListingsMap listings={listings} city={city} />
+        </div>
+
+        <div style={{ height: 1, background: '#2A2723', margin: '0 0 clamp(18px,3vw,28px)' }} />
+
         {/* Liste */}
         {loading ? (
           <p style={{ padding: '40px 0', color: '#6B655A', fontFamily: "'Cutive Mono', monospace", fontSize: 14 }}>Chargement...</p>
@@ -96,7 +104,7 @@ export default function Listings() {
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr)', gap: 0 }}>
-            {listings.map((l) => (
+            {listings.map((l, i) => (
               <div key={l.id} style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(14px,2.4vw,28px)', alignItems: 'flex-start', padding: 'clamp(16px,2.6vw,26px) 0', borderBottom: '1px solid #C7C0AE' }}>
                 {/* Photo placeholder */}
                 <div style={{ flex: '1 1 240px', minWidth: 180, aspectRatio: '4/3', border: '1px solid #2A2723', background: 'repeating-linear-gradient(135deg,#E9E1D0 0 9px,#F4EEE2 9px 18px)', display: 'flex', alignItems: 'flex-end', padding: 10 }}>
