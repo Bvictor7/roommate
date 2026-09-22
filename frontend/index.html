@@ -17,10 +17,19 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
     <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Karla:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Caveat:wght@400;600&family=Cutive+Mono&family=DotGothic16&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <style>
       body { margin: 0; background: #F4EEE2; }
       * { box-sizing: border-box; }
       a { color: inherit; }
+      .leaflet-popup-content-wrapper {
+        border-radius: 0 !important;
+        border: 1.5px solid #2A2723 !important;
+        box-shadow: 3px 3px 0 rgba(42,39,35,.2) !important;
+        font-family: Karla, sans-serif !important;
+      }
+      .leaflet-popup-tip { background: #F4EEE2 !important; }
     </style>
   </head>
   <body>
