@@ -31,9 +31,9 @@ export default function ListingsMap({ listings = [], city = 'Lyon' }) {
       zoomControl: true,
     })
 
-    // Tuiles style vintage Stadia Maps
-    L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>',
+    // Tuiles style vintage OpenStreetMap contributors
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://openstreetmap.org/copyright/">OpenStreetMap contributors</a>',
       maxZoom: 18,
     }).addTo(map)
 
