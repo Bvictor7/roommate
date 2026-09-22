@@ -1,214 +1,168 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
-const testimonials = [
-  {
-    initials: 'SC',
-    color: 'bg-emerald-700',
-    name: 'Sarah C.',
-    city: 'Paris',
-    text: "J'ai trouvé mes colocs en une semaine et on n'a jamais eu une seule dispute sur les comptes.",
-  },
-  {
-    initials: 'TM',
-    color: 'bg-teal-700',
-    name: 'Thomas M.',
-    city: 'Lyon',
-    text: 'Le planning des tâches a sauvé notre coloc. Plus besoin de rappeler à qui le tour.',
-  },
-  {
-    initials: 'LD',
-    color: 'bg-blue-700',
-    name: 'Léa D.',
-    city: 'Bordeaux',
-    text: "Le score d'affinité fait vraiment la différence. Mes colocs sont devenus des amis.",
-  },
+const landingExpenses = [
+  { qty: '×4', label: 'Loyer septembre', amount: '1 480,00 €' },
+  { qty: '×4', label: 'Courses Grand Frais', amount: '128,40 €' },
+  { qty: '×4', label: 'Électricité (bimestre)', amount: '86,34 €' },
+  { qty: '×2', label: 'Pizzas dimanche soir', amount: '26,50 €' },
+]
+
+const landingChores = [
+  { task: 'Salle de bain', who: 'toi', color: '#F0B49C', strike: 'none' },
+  { task: 'Poubelles + tri', who: 'Malik', color: '#F0B49C', strike: 'none' },
+  { task: 'Cuisine — sol', who: 'Chloé', color: '#EFEAD9', strike: 'none' },
+  { task: 'Aspirateur séjour', who: 'Sam', color: '#A9B3A5', strike: 'line-through' },
+]
+
+const quotes = [
+  { text: '« On a arrêté le tableau Excel au bout de trois semaines. Là, quand j\'avance les courses je prends la photo du ticket et c\'est fini. »', who: 'Chloé, 26 ans — Toulouse, 4 colocs depuis 2024' },
+  { text: '« Le tour de ménage c\'était le vrai sujet chez nous, pas l\'argent. Voir qui a coché quoi a réglé 90 % des tensions. »', who: 'Malik, 23 ans — Lyon 7e, 3 colocs' },
+  { text: '« J\'ai trouvé ma chambre ici. Pouvoir regarder comment ils gèrent les comptes avant d\'emménager, ça change tout. »', who: 'Sam, 21 ans — Nantes, arrivé en janvier' },
 ]
 
 export default function Home() {
+  const navigate = useNavigate()
+
   return (
-    <div className="min-h-screen bg-[#0f1117] text-white">
-      <main>
+    <div style={{ minHeight: '100vh', background: '#F4EEE2', fontFamily: 'Karla, system-ui, sans-serif', color: '#2A2723', overflowX: 'hidden' }}>
 
       {/* Hero */}
-      <section className="w-full max-w-4xl mx-auto text-center px-4 sm:px-6 pt-16 sm:pt-24 pb-12 sm:pb-16">
-        <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-3 py-1.5 text-xs sm:text-sm text-white/80 mb-6 sm:mb-8">
-          <span className="w-2 h-2 rounded-full bg-teal-400 inline-block shrink-0"></span>
-          Nouveau · Score d'affinité par IA
-        </div>
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-4 sm:mb-6 px-2">
-          La colocation, enfin{' '}
-          <span className="text-teal-400">organisée</span>.<br />
-          De la recherche à la vie<br />
-          à plusieurs.
-        </h1>
-        <p className="text-white/60 text-base sm:text-lg max-w-xl mx-auto mb-8 sm:mb-10 px-2">
-          Trouvez les colocataires qui vous ressemblent, puis gérez tâches,
-          dépenses et courses au même endroit. Une seule app, zéro friction.
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 px-4">
-          <Link
-            to="/listings"
-            className="w-full sm:w-auto bg-teal-400 text-[#0f1117] px-6 py-3 rounded-full font-semibold hover:bg-teal-300 transition text-center"
-          >
-            Trouver un logement →
-          </Link>
-          <Link
-            to="/dashboard"
-            className="w-full sm:w-auto border border-white/20 text-white px-6 py-3 rounded-full font-semibold hover:bg-white/10 transition text-center"
-          >
-            Gérer ma coloc
-          </Link>
-        </div>
-      </section>
-
-      {/* Preview widget */}
-      <section className="max-w-2xl mx-auto px-4 sm:px-6 pb-16 sm:pb-20">
-        <div className="bg-[#1a1d27] rounded-2xl border border-white/10 p-4 sm:p-6 grid grid-cols-2 gap-4">
-          <div>
-            <p className="text-xs text-white/60 uppercase tracking-widest mb-3">Tâches de la semaine</p>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between gap-1">
-                <div className="flex items-center gap-1.5 min-w-0">
-                  <div className="w-4 h-4 rounded border border-red-500 flex items-center justify-center shrink-0">
-                    <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                  </div>
-                  <span className="text-xs sm:text-sm text-white/80 truncate">Thomas · Poubelles</span>
-                </div>
-                <span className="text-xs text-red-400 shrink-0">Auj.</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-4 h-4 rounded border border-teal-400 flex items-center justify-center shrink-0">
-                  <svg className="w-2.5 h-2.5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <span className="text-xs sm:text-sm text-white/60 line-through truncate">Julie · Ménage salon</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-4 h-4 rounded border border-white/20 shrink-0"></div>
-                <span className="text-xs sm:text-sm text-white/80 truncate">Alex · Courses</span>
-              </div>
-            </div>
+      <section style={{ maxWidth: 1160, margin: '0 auto', padding: 'clamp(24px,4vw,58px) clamp(14px,3vw,34px) 0', display: 'flex', flexWrap: 'wrap', gap: 'clamp(18px,3vw,42px)', alignItems: 'flex-end' }}>
+        <div style={{ flex: '1.15 1 340px', minWidth: 0 }}>
+          <h1 style={{ fontFamily: 'Newsreader, serif', fontWeight: 500, fontSize: 'clamp(40px,7vw,86px)', lineHeight: 1, letterSpacing: '-.025em', margin: 0, maxWidth: '16ch' }}>
+            Une coloc, ça se vit.{' '}
+            <span style={{ fontStyle: 'italic', color: '#1F4438' }}>Pas juste ça se compte.</span>
+          </h1>
+          <p style={{ margin: '20px 0 0', maxWidth: '48ch', fontSize: 'clamp(17px,1.6vw,20px)', lineHeight: 1.5, color: '#4A453C' }}>
+            Les dépenses partagées, les tours de ménage, le planning et les annonces de chambres libres — au même endroit. Déclaratif : RoomMate note qui doit combien à qui, vous vous arrangez comme vous voulez.
+          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 24, alignItems: 'center' }}>
+            <Link to="/register" style={{ background: '#B4472C', color: '#F9F5EC', fontSize: 17, fontWeight: 600, padding: '12px 22px', textDecoration: 'none' }}>
+              Créer mon foyer
+            </Link>
+            <Link to="/listings" style={{ border: '1.5px solid #2A2723', fontSize: 17, fontWeight: 600, padding: '12px 22px', textDecoration: 'none', color: '#2A2723' }}>
+              Voir les annonces
+            </Link>
+            <span style={{ fontFamily: "'Cutive Mono', monospace", fontSize: 14, color: '#6B655A', marginLeft: 4 }}>gratuit · 4 colocs max par foyer</span>
           </div>
-          <div className="border-l border-white/10 pl-4">
-            <p className="text-xs text-white/60 uppercase tracking-widest mb-3">Solde</p>
-            <p className="text-white/60 text-xs sm:text-sm">Sarah vous doit</p>
-            <p className="text-2xl sm:text-3xl font-bold text-teal-400">14,50 €</p>
+        </div>
+        <div style={{ flex: '1 1 270px', minWidth: 0, display: 'grid', gridTemplateColumns: 'minmax(0,1fr)', gap: 10 }}>
+          <div style={{ aspectRatio: '4/3', border: '1px solid #2A2723', background: 'repeating-linear-gradient(135deg,#E9E1D0 0 9px,#F4EEE2 9px 18px)', display: 'flex', alignItems: 'flex-end', padding: 12 }}>
+            <span style={{ fontFamily: "'Cutive Mono', monospace", fontSize: 13, color: '#4A453C', background: '#F4EEE2', padding: '3px 6px' }}>PHOTO — cuisine, 4 personnes qui dînent</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 10 }}>
+            <div style={{ aspectRatio: '1/1', border: '1px solid #2A2723', background: 'repeating-linear-gradient(135deg,#E9E1D0 0 9px,#F4EEE2 9px 18px)', display: 'flex', alignItems: 'flex-end', padding: 10 }}>
+              <span style={{ fontFamily: "'Cutive Mono', monospace", fontSize: 12, color: '#4A453C', background: '#F4EEE2', padding: '2px 5px' }}>PHOTO — chambre</span>
+            </div>
+            <div style={{ aspectRatio: '1/1', border: '1px solid #2A2723', background: 'repeating-linear-gradient(135deg,#E9E1D0 0 9px,#F4EEE2 9px 18px)', display: 'flex', alignItems: 'flex-end', padding: 10 }}>
+              <span style={{ fontFamily: "'Cutive Mono', monospace", fontSize: 12, color: '#4A453C', background: '#F4EEE2', padding: '2px 5px' }}>PHOTO — tableau</span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Two axes */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 pb-16 sm:pb-24">
-        <p className="text-center text-teal-400 text-xs uppercase tracking-widest mb-3">Tout-en-un</p>
-        <h2 className="text-center text-2xl sm:text-3xl font-bold mb-8 sm:mb-12">Deux axes, une seule app</h2>
+      {/* Ce que la maison gère */}
+      <section style={{ maxWidth: 1160, margin: '0 auto', padding: 'clamp(40px,6vw,82px) clamp(14px,3vw,34px) 0' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 14 }}>
+          <h2 style={{ fontFamily: 'Newsreader, serif', fontWeight: 500, fontSize: 'clamp(26px,3.4vw,42px)', letterSpacing: '-.02em', margin: 0, lineHeight: 1 }}>Ce que la maison gère</h2>
+          <div style={{ flex: 1, height: 1, background: '#2A2723', marginBottom: 10 }} />
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Axe 1 */}
-          <div className="bg-[#1a1d27] rounded-2xl border border-white/10 p-5 sm:p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="w-2 h-2 rounded-full bg-red-400 shrink-0"></span>
-              <span className="text-xs text-red-400 uppercase tracking-widest">AXE 1 · Recherche</span>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(16px,2.6vw,34px)', marginTop: 'clamp(18px,3vw,30px)', alignItems: 'flex-start' }}>
+          {/* Ticket dépenses */}
+          <div style={{ flex: '1.25 1 320px', minWidth: 0, background: '#FBF7EE', border: '1px solid #2A2723', padding: 'clamp(16px,2.4vw,26px)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
+              <h3 style={{ fontFamily: 'Newsreader, serif', fontWeight: 600, fontSize: 'clamp(21px,2.2vw,27px)', margin: 0 }}>Les dépenses, en ticket</h3>
+              <span style={{ fontFamily: "'Cutive Mono', monospace", fontSize: 13, color: '#6B655A' }}>APPART JEAN-JAURES · SEPT.</span>
             </div>
-            <h3 className="text-lg sm:text-xl font-bold mb-1">Le Matcher d'annonces</h3>
-            <p className="text-white/50 text-sm mb-5 sm:mb-6">Des profils classés par compatibilité réelle.</p>
-            <div className="space-y-3">
-              {[
-                { initials: 'JL', color: 'bg-purple-500', name: 'Julie L.', sub: 'Paris 11e · Calme, cuisine', score: '92%' },
-                { initials: 'TM', color: 'bg-teal-700', name: 'Thomas M.', sub: 'Lyon 3e · Sportif, sociable', score: '87%' },
-              ].map((p) => (
-                <div key={p.initials} className="flex items-center justify-between bg-white/5 rounded-xl px-3 sm:px-4 py-3">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className={`w-8 h-8 rounded-full ${p.color} flex items-center justify-center text-xs font-bold shrink-0`}>
-                      {p.initials}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium">{p.name}</p>
-                      <p className="text-xs text-white/60 truncate">{p.sub}</p>
-                    </div>
-                  </div>
-                  <span className="text-teal-400 font-bold text-sm shrink-0 ml-2">{p.score}</span>
+            <div style={{ marginTop: 14, borderTop: '1px dashed #B8B1A0' }}>
+              {landingExpenses.map((e, i) => (
+                <div key={i} style={{ display: 'grid', gridTemplateColumns: '30px minmax(0,1fr) auto', gap: 10, alignItems: 'baseline', padding: '8px 0', borderBottom: '1px dotted #CFC8B6' }}>
+                  <span style={{ fontFamily: "'Cutive Mono', monospace", fontSize: 13, color: '#6B655A' }}>{e.qty}</span>
+                  <span style={{ fontSize: 16 }}>{e.label}</span>
+                  <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 17, whiteSpace: 'nowrap' }}>{e.amount}</span>
                 </div>
               ))}
             </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: 10, paddingTop: 10 }}>
+              <span style={{ fontSize: 15, fontWeight: 600 }}>Ton solde</span>
+              <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 26, color: '#B4472C', lineHeight: 1 }}>−32,10 €</span>
+            </div>
+            <div style={{ borderTop: '2px solid #2A2723', marginTop: 6 }} />
+            <div style={{ borderTop: '2px solid #2A2723', marginTop: 3 }} />
+            <p style={{ margin: '12px 0 0', fontSize: 15, lineHeight: 1.5, color: '#4A453C' }}>Chaque avance est une ligne, chaque solde est un fait. Personne ne paie via RoomMate : tu marques « réglé » quand c'est réglé.</p>
           </div>
 
-          {/* Axe 2 */}
-          <div className="flex flex-col gap-4">
-            <div className="bg-[#1a1d27] rounded-2xl border border-white/10 p-5 sm:p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold">Le Planning des tâches</h3>
-                <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full shrink-0">AXE 2</span>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-white/5 rounded-xl p-3">
-                  <p className="text-sm font-medium">Thomas</p>
-                  <p className="text-xs text-white/50">Poubelles 🗑️</p>
-                </div>
-                <div className="bg-white/5 rounded-xl p-3">
-                  <p className="text-sm font-medium">Julie</p>
-                  <p className="text-xs text-white/50">Ménage ✅</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-[#1a1d27] rounded-2xl border border-white/10 p-5 sm:p-6 flex items-center justify-between">
-              <div>
-                <h3 className="font-bold mb-1">Les comptes clairs</h3>
-                <p className="text-white/50 text-sm">Sarah vous doit</p>
-                <p className="text-xl sm:text-2xl font-bold text-teal-400">14,50 €</p>
-              </div>
-              <div className="flex items-end gap-1 h-12">
-                {[40, 65, 30, 80, 55].map((h, i) => (
-                  <div key={i} style={{ height: `${h}%` }} className="w-3 bg-teal-400/60 rounded-sm"></div>
+          {/* Ménage + note */}
+          <div style={{ flex: '1 1 270px', minWidth: 0, display: 'grid', gridTemplateColumns: 'minmax(0,1fr)', gap: 'clamp(14px,2vw,22px)' }}>
+            <div style={{ background: '#25332C', color: '#EFEAD9', padding: 'clamp(16px,2.2vw,24px)', border: '1px solid #1A241F' }}>
+              <div style={{ fontFamily: 'Caveat, cursive', fontSize: 'clamp(24px,2.6vw,32px)', lineHeight: 1, color: '#F3EEDE' }}>Ménage — semaine 38</div>
+              <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: 'minmax(0,1fr)', gap: 9, fontFamily: 'Caveat, cursive', fontSize: 21 }}>
+                {landingChores.map((c, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, borderBottom: '1px solid rgba(239,234,217,.25)', paddingBottom: 6, color: c.color, textDecoration: c.strike }}>
+                    <span>{c.task}</span><span>{c.who}</span>
+                  </div>
                 ))}
               </div>
+              <p style={{ margin: '14px 0 0', fontSize: 15, lineHeight: 1.5, color: '#C9C2AE', fontFamily: 'Karla, sans-serif' }}>Le tableau du couloir, en ligne. Tu coches, ça tourne la semaine suivante.</p>
             </div>
-          </div>
-        </div>
-
-        {/* Sécurité */}
-        <div className="mt-4 bg-[#1a1d27] rounded-2xl border border-white/10 p-5 sm:p-6 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
-            🛡
-          </div>
-          <div>
-            <h3 className="font-bold">Sécurité garantie</h3>
-            <p className="text-white/50 text-sm">Profils vérifiés et identité confirmée.</p>
+            <div style={{ background: '#E3B44A', padding: 'clamp(14px,2vw,20px)', border: '1px solid #9E7A22', transform: 'rotate(-1deg)' }}>
+              <div style={{ fontFamily: 'Caveat, cursive', fontSize: 'clamp(21px,2.2vw,26px)', lineHeight: 1.2, color: '#3A2E0E' }}>Malik : plombier jeudi 14h, faut quelqu'un sur place</div>
+              <div style={{ fontFamily: 'Caveat, cursive', fontSize: 18, color: '#5A4814', marginTop: 8 }}>posté hier, 21:04</div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 pb-16 sm:pb-24">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {testimonials.map((t) => (
-            <div key={t.initials} className="bg-[#1a1d27] rounded-2xl border border-white/10 p-5 sm:p-6">
-              <p className="text-yellow-400 text-sm mb-3">★★★★★</p>
-              <p className="text-white/70 text-sm mb-4 leading-relaxed">« {t.text} »</p>
-              <div className="flex items-center gap-3">
-                <div className={`w-8 h-8 rounded-full ${t.color} flex items-center justify-center text-xs font-bold shrink-0`}>
-                  {t.initials}
-                </div>
+      {/* Témoignages */}
+      <section style={{ maxWidth: 1160, margin: '0 auto', padding: 'clamp(40px,6vw,80px) clamp(14px,3vw,34px) 0' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(16px,2.6vw,36px)', alignItems: 'flex-start' }}>
+          <div style={{ flex: '1 1 250px', minWidth: 0 }}>
+            <h2 style={{ fontFamily: 'Newsreader, serif', fontWeight: 500, fontSize: 'clamp(24px,3vw,36px)', letterSpacing: '-.02em', margin: 0, lineHeight: 1.05 }}>Ils l'utilisent depuis un moment</h2>
+            <p style={{ margin: '12px 0 0', fontSize: 15, lineHeight: 1.55, color: '#4A453C', maxWidth: '36ch' }}>Trois foyers qui ont accepté qu'on cite leurs messages.</p>
+          </div>
+          <div style={{ flex: '1.5 1 300px', minWidth: 0, display: 'grid', gridTemplateColumns: 'minmax(0,1fr)', gap: 'clamp(12px,2vw,18px)' }}>
+            {quotes.map((q, i) => (
+              <div key={i} style={{ display: 'grid', gridTemplateColumns: '96px minmax(0,1fr)', gap: 'clamp(12px,2vw,18px)', alignItems: 'start', borderTop: '1px solid #2A2723', paddingTop: 14 }}>
+                <div style={{ aspectRatio: '3/4', border: '1px solid #2A2723', background: 'repeating-linear-gradient(135deg,#E9E1D0 0 8px,#F4EEE2 8px 16px)' }} />
                 <div>
-                  <p className="text-sm font-medium">{t.name}</p>
-                  <p className="text-xs text-white/60">{t.city}</p>
+                  <p style={{ margin: 0, fontFamily: 'Newsreader, serif', fontSize: 'clamp(17px,1.8vw,21px)', lineHeight: 1.4 }}>{q.text}</p>
+                  <div style={{ fontFamily: "'Cutive Mono', monospace", fontSize: 13, color: '#6B655A', marginTop: 8 }}>{q.who}</div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
-      </main>
+      {/* CTA final */}
+      <section style={{ maxWidth: 1160, margin: '0 auto', padding: 'clamp(40px,6vw,80px) clamp(14px,3vw,34px) clamp(44px,6vw,90px)' }}>
+        <div style={{ background: '#1F4438', color: '#F2EEE0', padding: 'clamp(22px,4vw,48px)', border: '1px solid #143026', display: 'flex', flexWrap: 'wrap', gap: 'clamp(16px,3vw,40px)', alignItems: 'center' }}>
+          <div style={{ flex: '1.3 1 320px', minWidth: 0 }}>
+            <h2 style={{ fontFamily: 'Newsreader, serif', fontWeight: 500, fontSize: 'clamp(28px,4vw,52px)', lineHeight: 1.02, letterSpacing: '-.02em', margin: 0, maxWidth: '20ch' }}>
+              Crée le foyer, invite les autres, arrête de tenir les comptes de tête.
+            </h2>
+            <p style={{ margin: '16px 0 0', fontSize: 17, lineHeight: 1.5, color: '#CFD8CE', maxWidth: '46ch' }}>Quatre colocs par foyer, un lien d'invitation, pas de carte bancaire à renseigner.</p>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+            <Link to="/register" style={{ background: '#E3B44A', color: '#2A2723', fontSize: 17, fontWeight: 700, padding: '13px 24px', textDecoration: 'none' }}>
+              Créer mon foyer
+            </Link>
+            <Link to="/listings" style={{ border: '1.5px solid #EFEAD9', color: '#EFEAD9', fontSize: 17, fontWeight: 600, padding: '13px 24px', textDecoration: 'none' }}>
+              Chercher une chambre
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/10 py-6 px-4 sm:px-8">
-        <div className="max-w-5xl mx-auto flex items-center justify-center gap-6 text-xs text-white/60">
-          <a href="#" className="hover:text-white transition">CGU</a>
-          <a href="#" className="hover:text-white transition">Confidentialité</a>
-          <a href="#" className="hover:text-white transition">Cookies</a>
+      <div style={{ borderTop: '1px solid #2A2723', background: '#F4EEE2' }}>
+        <div style={{ maxWidth: 1160, margin: '0 auto', padding: '16px clamp(14px,3vw,34px) 28px', display: 'flex', flexWrap: 'wrap', gap: '8px 24px', alignItems: 'baseline' }}>
+          <span style={{ fontFamily: 'Newsreader, serif', fontSize: 19, fontWeight: 600 }}>RoomMate</span>
+          <span style={{ fontSize: 15, color: '#4A453C' }}>Toulouse · Lyon · Nantes</span>
+          <span style={{ fontFamily: "'Cutive Mono', monospace", fontSize: 13, color: '#6B655A', marginLeft: 'auto' }}>Aucun paiement en ligne. Vous vous arrangez entre vous.</span>
         </div>
-      </footer>
+      </div>
     </div>
   )
 }

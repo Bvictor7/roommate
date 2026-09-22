@@ -1,21 +1,16 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
-const tabs = [
-  { label: 'Landing', path: '/' },
-  { label: 'Dashboard', path: '/dashboard' },
-  { label: 'Recherche', path: '/listings' },
-]
-
 export default function TopNav() {
   const location = useLocation()
-  const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const { user, logout } = useAuth()
 
-  const isActive = (path) => {
-    if (path === '/') return location.pathname === '/'
-    return location.pathname.startsWith(path)
-  }
+  const tabs = [
+    { label: 'Accueil', path: '/' },
+    { label: 'Mon foyer', path: '/dashboard' },
+    { label: 'Annonces', path: '/listings' },
+  ]
 
   const handleLogout = () => {
     logout()
@@ -23,65 +18,43 @@ export default function TopNav() {
   }
 
   return (
-    <nav aria-label="Navigation principale" className="bg-[#0f1117] border-b border-white/10 sticky top-0 z-50">
-      <div className="px-4 sm:px-6 h-14 flex items-center justify-between gap-3">
-
-        <Link to="/" aria-label="Accueil RoomMate" className="flex items-center gap-2 shrink-0">
-          <div aria-hidden="true" className="w-7 h-7 rounded-lg bg-teal-400 flex items-center justify-center font-bold text-[#0f1117] text-xs">
-            R
-          </div>
-          <span className="font-bold text-white text-sm hidden sm:block">RoomMate</span>
+    <nav style={{ position: 'sticky', top: 0, zIndex: 20, background: '#F4EEE2', borderBottom: '1px solid #2A2723' }} aria-label="Navigation principale">
+      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '11px clamp(14px,3vw,34px)', display: 'flex', flexWrap: 'wrap', gap: '10px 20px', alignItems: 'center' }}>
+        <Link to="/" style={{ fontFamily: 'Newsreader, serif', fontSize: 23, fontWeight: 600, letterSpacing: '-.01em', textDecoration: 'none', color: '#2A2723' }}>
+          RoomMate
         </Link>
-
-        <div role="tablist" aria-label="Pages principales" className="flex items-center gap-0.5 bg-white/10 rounded-full p-1">
-          {tabs.map((tab) => (
-            <Link
-              key={tab.path}
-              to={tab.path}
-              role="tab"
-              aria-selected={isActive(tab.path)}
-              aria-current={isActive(tab.path) ? 'page' : undefined}
-              className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 ${
-                isActive(tab.path)
-                  ? 'bg-teal-400 text-[#0f1117]'
-                  : 'text-white/60 hover:text-white'
-              }`}
-            >
-              {tab.label}
-            </Link>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-2 shrink-0">
-          {user ? (
-            <>
+        <div style={{ display: 'flex', gap: 4, marginLeft: 'auto', flexWrap: 'wrap', alignItems: 'center' }}>
+          {tabs.map(tab => {
+            const active = location.pathname === tab.path || (tab.path !== '/' && location.pathname.startsWith(tab.path))
+            return (
               <Link
-                to="/profile"
-                aria-label={`Profil de ${user.username}`}
-                className="w-8 h-8 rounded-full bg-teal-700 flex items-center justify-center text-xs font-bold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400"
+                key={tab.path}
+                to={tab.path}
+                aria-current={active ? 'page' : undefined}
+                style={{
+                  fontSize: 15, fontWeight: 600, padding: '7px 14px', textDecoration: 'none',
+                  background: active ? '#2A2723' : 'transparent',
+                  color: active ? '#F4EEE2' : '#2A2723',
+                  border: '1px solid #2A2723'
+                }}
               >
-                <span aria-hidden="true">{user.username?.[0]?.toUpperCase() || 'U'}</span>
+                {tab.label}
               </Link>
-              <button
-                onClick={handleLogout}
-                aria-label="Se déconnecter"
-                className="hidden sm:block text-xs text-white/40 hover:text-red-400 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 rounded"
-              >
-                Déco
-              </button>
-            </>
+            )
+          })}
+          {user ? (
+            <button
+              onClick={handleLogout}
+              style={{ fontSize: 15, fontWeight: 600, padding: '7px 14px', background: 'transparent', color: '#2A2723', border: '1px solid #2A2723', cursor: 'pointer', marginLeft: 8 }}
+            >
+              Déco
+            </button>
           ) : (
             <>
-              <Link
-                to="/login"
-                className="text-xs sm:text-sm text-white/60 hover:text-white transition hidden sm:block focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 rounded"
-              >
+              <Link to="/login" style={{ fontSize: 15, fontWeight: 600, padding: '7px 14px', textDecoration: 'none', color: '#2A2723', marginLeft: 8 }}>
                 Connexion
               </Link>
-              <Link
-                to="/register"
-                className="text-xs sm:text-sm bg-teal-400 text-[#0f1117] px-3 py-1.5 rounded-full font-semibold hover:bg-teal-300 transition whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
-              >
+              <Link to="/register" style={{ fontSize: 15, fontWeight: 600, padding: '7px 14px', textDecoration: 'none', background: '#2A2723', color: '#F4EEE2', border: '1px solid #2A2723' }}>
                 Créer un compte
               </Link>
             </>
