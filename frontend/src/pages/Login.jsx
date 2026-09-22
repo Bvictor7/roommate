@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Mail, Lock } from 'lucide-react'
 import api from '../services/api'
 import { useAuth } from '../context/AuthContext'
 
@@ -18,7 +17,7 @@ export default function Login() {
     try {
       const res = await api.post('/auth/login', form)
       login(res.data.token, res.data.user)
-      navigate('/listings')
+      navigate('/dashboard')
     } catch (err) {
       setError(err.response?.data?.message || 'Email ou mot de passe incorrect')
     } finally {
@@ -31,25 +30,24 @@ export default function Login() {
   }
 
   return (
-    <main className="min-h-[calc(100vh-56px)] bg-[#0f1117] flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-white">Connexion</h1>
-          <p className="text-white/50 mt-2">Accédez à votre espace colocation</p>
-        </div>
+    <main style={{ minHeight: 'calc(100vh - 56px)', background: '#F4EEE2', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px clamp(14px,3vw,34px)', fontFamily: 'Karla, system-ui, sans-serif', color: '#2A2723' }}>
+      <div style={{ width: '100%', maxWidth: 440 }}>
+        <h1 style={{ fontFamily: 'Newsreader, serif', fontWeight: 500, fontSize: 'clamp(28px,4vw,38px)', margin: '0 0 6px', letterSpacing: '-.02em' }}>Connexion</h1>
+        <p style={{ margin: '0 0 28px', fontSize: 16, color: '#6B655A' }}>Accédez à votre espace colocation</p>
 
-        <div className="bg-[#1a1d27] rounded-2xl border border-white/10 p-6 sm:p-8 space-y-5">
+        <div style={{ background: '#FBF7EE', border: '1px solid #2A2723', padding: 'clamp(20px,3vw,32px)' }}>
+
           {error && (
-            <div role="alert" aria-live="polite" className="bg-red-500/10 text-red-400 text-sm p-4 rounded-xl border border-red-500/20">
+            <div role="alert" style={{ background: '#F5E8E5', border: '1px solid #B4472C', color: '#B4472C', fontSize: 14, padding: '10px 14px', marginBottom: 20 }}>
               {error}
             </div>
           )}
 
           <button
             onClick={handleGoogle}
-            className="w-full py-3 bg-white text-[#0f1117] rounded-xl font-bold hover:bg-white/90 transition text-sm flex items-center justify-center gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            style={{ width: '100%', padding: '11px 0', background: '#fff', border: '1px solid #2A2723', fontSize: 15, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, color: '#2A2723', fontFamily: 'Karla, sans-serif' }}
           >
-            <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
@@ -58,58 +56,53 @@ export default function Login() {
             Continuer avec Google
           </button>
 
-          <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-white/10" />
-            <span className="text-white/30 text-xs">ou</span>
-            <div className="flex-1 h-px bg-white/10" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '18px 0' }}>
+            <div style={{ flex: 1, height: 1, background: '#D4C9B8' }} />
+            <span style={{ fontFamily: "'Cutive Mono', monospace", fontSize: 13, color: '#6B655A' }}>ou</span>
+            <div style={{ flex: 1, height: 1, background: '#D4C9B8' }} />
           </div>
 
-          <div className="space-y-1.5">
-            <label htmlFor="email" className="text-sm font-medium text-white/70">Email</label>
-            <div className="relative">
-              <Mail aria-hidden="true" className="w-4 h-4 text-white/30 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                id="email"
-                type="email"
-                required
-                autoComplete="email"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 outline-none focus:border-teal-400 focus-visible:ring-2 focus-visible:ring-teal-400 transition text-sm"
-                placeholder="nom@exemple.com"
-              />
-            </div>
+          <div style={{ marginBottom: 14 }}>
+            <label htmlFor="email" style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Email</label>
+            <input
+              id="email"
+              type="email"
+              required
+              autoComplete="email"
+              value={form.email}
+              onChange={e => setForm({ ...form, email: e.target.value })}
+              onKeyDown={e => e.key === 'Enter' && handleSubmit(e)}
+              placeholder="nom@exemple.com"
+              style={{ width: '100%', padding: '10px 12px', border: '1px solid #2A2723', background: '#F4EEE2', fontSize: 15, fontFamily: 'Karla, sans-serif', color: '#2A2723', outline: 'none', boxSizing: 'border-box' }}
+            />
           </div>
 
-          <div className="space-y-1.5">
-            <label htmlFor="password" className="text-sm font-medium text-white/70">Mot de passe</label>
-            <div className="relative">
-              <Lock aria-hidden="true" className="w-4 h-4 text-white/30 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                id="password"
-                type="password"
-                required
-                autoComplete="current-password"
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 outline-none focus:border-teal-400 focus-visible:ring-2 focus-visible:ring-teal-400 transition text-sm"
-                placeholder="••••••••"
-              />
-            </div>
+          <div style={{ marginBottom: 20 }}>
+            <label htmlFor="password" style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Mot de passe</label>
+            <input
+              id="password"
+              type="password"
+              required
+              autoComplete="current-password"
+              value={form.password}
+              onChange={e => setForm({ ...form, password: e.target.value })}
+              onKeyDown={e => e.key === 'Enter' && handleSubmit(e)}
+              placeholder="••••••••"
+              style={{ width: '100%', padding: '10px 12px', border: '1px solid #2A2723', background: '#F4EEE2', fontSize: 15, fontFamily: 'Karla, sans-serif', color: '#2A2723', outline: 'none', boxSizing: 'border-box' }}
+            />
           </div>
 
           <button
             onClick={handleSubmit}
             disabled={loading}
-            aria-busy={loading}
-            className="w-full py-3 bg-teal-400 text-[#0f1117] rounded-xl font-bold hover:bg-teal-300 transition disabled:opacity-50 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            style={{ width: '100%', padding: '12px 0', background: '#B4472C', color: '#F9F5EC', fontSize: 16, fontWeight: 700, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'Karla, sans-serif', opacity: loading ? 0.7 : 1 }}
           >
             {loading ? 'Vérification...' : 'Se connecter'}
           </button>
 
-          <p className="text-center text-sm text-white/40 pt-1">
+          <p style={{ textAlign: 'center', fontSize: 14, color: '#6B655A', marginTop: 16, marginBottom: 0 }}>
             Nouveau ici ?{' '}
-            <Link to="/register" className="text-teal-400 hover:text-teal-300 font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 rounded">
+            <Link to="/register" style={{ color: '#B4472C', fontWeight: 600, textDecoration: 'underline' }}>
               Créer un compte
             </Link>
           </p>

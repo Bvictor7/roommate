@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Mail, Lock, User } from 'lucide-react'
 import api from '../services/api'
 import { useAuth } from '../context/AuthContext'
 
@@ -29,91 +28,76 @@ export default function Register() {
   }
 
   return (
-    <main className="min-h-[calc(100vh-56px)] bg-[#0f1117] flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-white">Créer un compte</h1>
-          <p className="text-white/50 mt-2">Rejoignez la communauté des colocs</p>
-        </div>
+    <main style={{ minHeight: 'calc(100vh - 56px)', background: '#F4EEE2', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px clamp(14px,3vw,34px)', fontFamily: 'Karla, system-ui, sans-serif', color: '#2A2723' }}>
+      <div style={{ width: '100%', maxWidth: 440 }}>
+        <h1 style={{ fontFamily: 'Newsreader, serif', fontWeight: 500, fontSize: 'clamp(28px,4vw,38px)', margin: '0 0 6px', letterSpacing: '-.02em' }}>Créer un compte</h1>
+        <p style={{ margin: '0 0 28px', fontSize: 16, color: '#6B655A' }}>Rejoignez la communauté des colocs</p>
 
-        <div className="bg-[#1a1d27] rounded-2xl border border-white/10 p-6 sm:p-8 space-y-5">
+        <div style={{ background: '#FBF7EE', border: '1px solid #2A2723', padding: 'clamp(20px,3vw,32px)' }}>
+
           {success && (
-            <div role="alert" aria-live="polite" className="bg-teal-500/10 text-teal-400 text-sm p-4 rounded-xl border border-teal-500/20 flex items-center gap-2">
-              <span>✓</span>
-              <span>Compte créé avec succès ! Redirection en cours...</span>
+            <div role="alert" style={{ background: '#E8F0E8', border: '1px solid #1F4438', color: '#1F4438', fontSize: 14, padding: '10px 14px', marginBottom: 20 }}>
+              ✓ Compte créé avec succès ! Redirection en cours...
             </div>
           )}
 
           {error && (
-            <div role="alert" aria-live="polite" className="bg-red-500/10 text-red-400 text-sm p-4 rounded-xl border border-red-500/20">
+            <div role="alert" style={{ background: '#F5E8E5', border: '1px solid #B4472C', color: '#B4472C', fontSize: 14, padding: '10px 14px', marginBottom: 20 }}>
               {error}
             </div>
           )}
 
-          <div className="space-y-1.5">
-            <label htmlFor="username" className="text-sm font-medium text-white/70">Nom d'utilisateur</label>
-            <div className="relative">
-              <User aria-hidden="true" className="w-4 h-4 text-white/30 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                id="username"
-                type="text"
-                required
-                autoComplete="username"
-                value={form.username}
-                onChange={(e) => setForm({ ...form, username: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 outline-none focus:border-teal-400 focus-visible:ring-2 focus-visible:ring-teal-400 transition text-sm"
-                placeholder="Votre pseudo"
-              />
-            </div>
+          <div style={{ marginBottom: 14 }}>
+            <label htmlFor="username" style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Nom d'utilisateur</label>
+            <input
+              id="username"
+              type="text"
+              required
+              value={form.username}
+              onChange={e => setForm({ ...form, username: e.target.value })}
+              placeholder="Votre pseudo"
+              style={{ width: '100%', padding: '10px 12px', border: '1px solid #2A2723', background: '#F4EEE2', fontSize: 15, fontFamily: 'Karla, sans-serif', color: '#2A2723', outline: 'none', boxSizing: 'border-box' }}
+            />
           </div>
 
-          <div className="space-y-1.5">
-            <label htmlFor="email" className="text-sm font-medium text-white/70">Email</label>
-            <div className="relative">
-              <Mail aria-hidden="true" className="w-4 h-4 text-white/30 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                id="email"
-                type="email"
-                required
-                autoComplete="email"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 outline-none focus:border-teal-400 focus-visible:ring-2 focus-visible:ring-teal-400 transition text-sm"
-                placeholder="nom@exemple.com"
-              />
-            </div>
+          <div style={{ marginBottom: 14 }}>
+            <label htmlFor="email" style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Email</label>
+            <input
+              id="email"
+              type="email"
+              required
+              value={form.email}
+              onChange={e => setForm({ ...form, email: e.target.value })}
+              placeholder="nom@exemple.com"
+              style={{ width: '100%', padding: '10px 12px', border: '1px solid #2A2723', background: '#F4EEE2', fontSize: 15, fontFamily: 'Karla, sans-serif', color: '#2A2723', outline: 'none', boxSizing: 'border-box' }}
+            />
           </div>
 
-          <div className="space-y-1.5">
-            <label htmlFor="password" className="text-sm font-medium text-white/70">Mot de passe</label>
-            <div className="relative">
-              <Lock aria-hidden="true" className="w-4 h-4 text-white/30 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                id="password"
-                type="password"
-                required
-                autoComplete="new-password"
-                minLength={6}
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 outline-none focus:border-teal-400 focus-visible:ring-2 focus-visible:ring-teal-400 transition text-sm"
-                placeholder="Min. 6 caractères"
-              />
-            </div>
+          <div style={{ marginBottom: 20 }}>
+            <label htmlFor="password" style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Mot de passe <span style={{ color: '#6B655A', fontWeight: 400 }}>(min. 6 caractères)</span></label>
+            <input
+              id="password"
+              type="password"
+              required
+              minLength={6}
+              value={form.password}
+              onChange={e => setForm({ ...form, password: e.target.value })}
+              placeholder="••••••••"
+              style={{ width: '100%', padding: '10px 12px', border: '1px solid #2A2723', background: '#F4EEE2', fontSize: 15, fontFamily: 'Karla, sans-serif', color: '#2A2723', outline: 'none', boxSizing: 'border-box' }}
+            />
           </div>
 
           <button
             onClick={handleSubmit}
             disabled={loading || success}
-            aria-busy={loading}
-            className="w-full py-3 bg-teal-400 text-[#0f1117] rounded-xl font-bold hover:bg-teal-300 transition disabled:opacity-50 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            style={{ width: '100%', padding: '12px 0', background: '#B4472C', color: '#F9F5EC', fontSize: 16, fontWeight: 700, border: 'none', cursor: (loading || success) ? 'not-allowed' : 'pointer', fontFamily: 'Karla, sans-serif', opacity: (loading || success) ? 0.7 : 1 }}
           >
             {loading ? 'Création...' : success ? 'Compte créé ✓' : "S'inscrire"}
           </button>
 
-          <p className="text-center text-sm text-white/40 pt-1">
+          <p style={{ textAlign: 'center', fontSize: 14, color: '#6B655A', marginTop: 16, marginBottom: 0 }}>
             Déjà inscrit ?{' '}
-            <Link to="/login" className="text-teal-400 hover:text-teal-300 font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 rounded">
+            <Link to="/login" style={{ color: '#B4472C', fontWeight: 600, textDecoration: 'underline' }}>
               Se connecter
             </Link>
           </p>
