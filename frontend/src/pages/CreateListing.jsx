@@ -1,17 +1,31 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { MapPin, Euro, Calendar, Layout } from 'lucide-react'
 import api from '../services/api'
+
+const inputStyle = {
+  width: '100%',
+  padding: '10px 12px',
+  border: '1px solid #2A2723',
+  background: '#F4EEE2',
+  fontSize: 15,
+  fontFamily: 'Karla, sans-serif',
+  color: '#2A2723',
+  outline: 'none',
+  boxSizing: 'border-box',
+}
+
+const labelStyle = {
+  display: 'block',
+  fontSize: 14,
+  fontWeight: 600,
+  marginBottom: 6,
+  fontFamily: 'Karla, sans-serif',
+}
 
 export default function CreateListing() {
   const [form, setForm] = useState({
-    title: '',
-    description: '',
-    price: '',
-    city: '',
-    postalCode: '',
-    availableDate: '',
-    type: 'chambre',
+    title: '', description: '', price: '', city: '',
+    postalCode: '', availableDate: '', type: 'chambre',
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -22,7 +36,6 @@ export default function CreateListing() {
     setError('')
     setLoading(true)
     try {
-      const token = localStorage.getItem('token')
       await api.post('/listings', {
         title: form.title.trim(),
         description: form.description.trim(),
@@ -31,8 +44,6 @@ export default function CreateListing() {
         price: parseFloat(form.price),
         availableDate: new Date(form.availableDate).toISOString(),
         type: form.type,
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
       })
       navigate('/listings')
     } catch {
@@ -42,141 +53,73 @@ export default function CreateListing() {
     }
   }
 
-  const inputClass = "w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 outline-none focus:border-teal-400 transition text-sm"
-  const labelClass = "text-sm font-medium text-white/70"
-
   return (
-    <div className="min-h-[calc(100vh-56px)] bg-[#0f1117] px-4 py-12">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold text-white mb-8">Publier une annonce</h1>
+    <main style={{ minHeight: 'calc(100vh - 56px)', background: '#F4EEE2', padding: '48px clamp(14px,3vw,34px)', fontFamily: 'Karla, system-ui, sans-serif', color: '#2A2723' }}>
+      <div style={{ maxWidth: 640, margin: '0 auto' }}>
+        <h1 style={{ fontFamily: 'Newsreader, serif', fontWeight: 500, fontSize: 'clamp(28px,4vw,38px)', margin: '0 0 28px', letterSpacing: '-.02em' }}>
+          Publier une annonce
+        </h1>
 
-        <div className="bg-[#1a1d27] rounded-2xl border border-white/10 p-6 sm:p-8">
+        <div style={{ background: '#FBF7EE', border: '1px solid #2A2723', padding: 'clamp(20px,3vw,32px)' }}>
           {error && (
-            <div className="bg-red-500/10 text-red-400 text-sm p-4 rounded-xl border border-red-500/20 mb-6">
+            <div role="alert" style={{ background: '#F5E8E5', border: '1px solid #B4472C', color: '#B4472C', fontSize: 14, padding: '10px 14px', marginBottom: 20 }}>
               {error}
             </div>
           )}
 
-          <div className="space-y-5">
-            <div className="space-y-1.5">
-              <label className={labelClass}>Titre (min 5 car.)</label>
-              <input
-                type="text"
-                required
-                minLength="5"
-                value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
-                className={inputClass}
-                placeholder="Ex: Grande chambre lumineuse Paris 11e"
-              />
+          <div style={{ display: 'grid', gap: 16 }}>
+            <div>
+              <label style={labelStyle}>Titre <span style={{ color: '#6B655A', fontWeight: 400 }}>(min 5 car.)</span></label>
+              <input type="text" required minLength="5" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="Ex: Grande chambre lumineuse Paris 11e" style={inputStyle} />
             </div>
 
-            <div className="space-y-1.5">
-              <label className={labelClass}>Type de logement</label>
-              <div className="relative">
-                <Layout className="w-4 h-4 text-white/30 absolute left-3 top-1/2 -translate-y-1/2" />
-                <select
-                  value={form.type}
-                  onChange={(e) => setForm({ ...form, type: e.target.value })}
-                  className={`${inputClass} pl-10 appearance-none`}
-                >
-                  <option value="chambre" className="bg-[#1a1d27]">Chambre</option>
-                  <option value="appartement" className="bg-[#1a1d27]">Appartement</option>
-                  <option value="maison" className="bg-[#1a1d27]">Maison</option>
-                </select>
+            <div>
+              <label style={labelStyle}>Type de logement</label>
+              <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} style={inputStyle}>
+                <option value="chambre">Chambre</option>
+                <option value="appartement">Appartement</option>
+                <option value="maison">Maison</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={labelStyle}>Description <span style={{ color: '#6B655A', fontWeight: 400 }}>(min 20 car.)</span></label>
+              <textarea required minLength="20" rows="4" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Décrivez votre logement, l'ambiance, les règles..." style={{ ...inputStyle, resize: 'vertical' }} />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div>
+                <label style={labelStyle}>Ville</label>
+                <input type="text" required value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} placeholder="Paris" style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Code postal</label>
+                <input type="text" required value={form.postalCode} onChange={e => setForm({ ...form, postalCode: e.target.value })} placeholder="75011" style={inputStyle} />
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <label className={labelClass}>Description (min 20 car.)</label>
-              <textarea
-                required
-                minLength="20"
-                rows="4"
-                value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-                className={inputClass}
-                placeholder="Décrivez votre logement, l'ambiance, les règles..."
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className={labelClass}>Ville</label>
-                <div className="relative">
-                  <MapPin className="w-4 h-4 text-white/30 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    required
-                    value={form.city}
-                    onChange={(e) => setForm({ ...form, city: e.target.value })}
-                    className={`${inputClass} pl-10`}
-                    placeholder="Paris"
-                  />
-                </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div>
+                <label style={labelStyle}>Loyer (€/mois)</label>
+                <input type="number" required value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} placeholder="650" style={inputStyle} />
               </div>
-              <div className="space-y-1.5">
-                <label className={labelClass}>Code postal</label>
-                <input
-                  type="text"
-                  required
-                  value={form.postalCode}
-                  onChange={(e) => setForm({ ...form, postalCode: e.target.value })}
-                  className={inputClass}
-                  placeholder="75011"
-                />
+              <div>
+                <label style={labelStyle}>Disponible le</label>
+                <input type="date" required value={form.availableDate} onChange={e => setForm({ ...form, availableDate: e.target.value })} style={inputStyle} />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className={labelClass}>Loyer CC (€/mois)</label>
-                <div className="relative">
-                  <Euro className="w-4 h-4 text-white/30 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="number"
-                    required
-                    value={form.price}
-                    onChange={(e) => setForm({ ...form, price: e.target.value })}
-                    className={`${inputClass} pl-10`}
-                    placeholder="650"
-                  />
-                </div>
-              </div>
-              <div className="space-y-1.5">
-                <label className={labelClass}>Disponible le</label>
-                <div className="relative">
-                  <Calendar className="w-4 h-4 text-white/30 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="date"
-                    required
-                    value={form.availableDate}
-                    onChange={(e) => setForm({ ...form, availableDate: e.target.value })}
-                    className={`${inputClass} pl-10`}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => navigate('/listings')}
-                className="flex-1 py-3 bg-white/5 text-white/60 rounded-xl font-semibold hover:bg-white/10 transition text-sm border border-white/10"
-              >
+            <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
+              <button type="button" onClick={() => navigate('/listings')} style={{ flex: 1, padding: '12px 0', background: 'transparent', border: '1.5px solid #2A2723', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'Karla, sans-serif', color: '#2A2723' }}>
                 Annuler
               </button>
-              <button
-                onClick={handleSubmit}
-                disabled={loading}
-                className="flex-1 py-3 bg-teal-400 text-[#0f1117] rounded-xl font-bold hover:bg-teal-300 transition disabled:opacity-50 text-sm"
-              >
+              <button onClick={handleSubmit} disabled={loading} style={{ flex: 1, padding: '12px 0', background: '#B4472C', color: '#F9F5EC', border: 'none', fontSize: 15, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'Karla, sans-serif', opacity: loading ? 0.7 : 1 }}>
                 {loading ? 'Publication...' : 'Mettre en ligne'}
               </button>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </main>
   )
 }
