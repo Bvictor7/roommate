@@ -96,7 +96,7 @@ export default function Listings() {
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr)', gap: 0 }}>
-            {listings.map((l, i) => (
+            {listings.map((l) => (
               <div key={l.id} style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(14px,2.4vw,28px)', alignItems: 'flex-start', padding: 'clamp(16px,2.6vw,26px) 0', borderBottom: '1px solid #C7C0AE' }}>
                 {/* Photo placeholder */}
                 <div style={{ flex: '1 1 240px', minWidth: 180, aspectRatio: '4/3', border: '1px solid #2A2723', background: 'repeating-linear-gradient(135deg,#E9E1D0 0 9px,#F4EEE2 9px 18px)', display: 'flex', alignItems: 'flex-end', padding: 10 }}>
