@@ -28,7 +28,7 @@ export default function CreateListing() {
         description: form.description.trim(),
         city: form.city.trim(),
         postalCode: form.postalCode.trim(),
-        price: parseInt(form.price, 10),
+        price: parseFloat(form.price),
         availableDate: new Date(form.availableDate).toISOString(),
         type: form.type,
       }, {

@@ -24,7 +24,7 @@ app.use(limiter)
 
 app.use('/api/auth', authRoutes)
 app.use('/api/listings', listingRoutes)
-app.use('/api/colocations', colocationRoutes)
+app.use('/api/colocation', colocationRoutes)
 
 app.get('/', (req, res) => {
   res.json({ message: 'RoomMate API is running' })

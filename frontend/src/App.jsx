@@ -16,7 +16,7 @@ import ColocationSetup from './pages/ColocationSetup'
 
 function Layout({ children }) {
   return (
-    <div className="min-h-screen bg-[#0f1117]">
+    <div style={{ minHeight: '100vh', background: '#F4EEE2' }}>
       <TopNav />
       {children}
     </div>

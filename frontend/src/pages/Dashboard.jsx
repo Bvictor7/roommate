@@ -18,7 +18,6 @@ export default function Dashboard() {
 
   // Forms
   const [newTask, setNewTask] = useState('')
-  const [newNote, setNewNote] = useState('')
   const [newCourse, setNewCourse] = useState('')
   const [newExpense, setNewExpense] = useState({ amount: '', category: '', description: '' })
   const [showExpenseForm, setShowExpenseForm] = useState(false)

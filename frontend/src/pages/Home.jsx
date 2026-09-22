@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 const landingExpenses = [
   { qty: '×4', label: 'Loyer septembre', amount: '1 480,00 €' },
@@ -21,8 +21,6 @@ const quotes = [
 ]
 
 export default function Home() {
-  const navigate = useNavigate()
-
   return (
     <div style={{ minHeight: '100vh', background: '#F4EEE2', fontFamily: 'Karla, system-ui, sans-serif', color: '#2A2723', overflowX: 'hidden' }}>
 

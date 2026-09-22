@@ -7,7 +7,7 @@ import passport from './config/passport.js'
 import authRoutes from './routes/auth.js'
 import listingRoutes from './routes/listings.js'
 import oauthRoutes from './routes/oauth.js'
-import colocationRoutes from './routes/colocation.js'
+import colocationRoutes from './routes/colocations.js'
 import errorHandler from './middleware/errorHandler.js'
 
 dotenv.config()
