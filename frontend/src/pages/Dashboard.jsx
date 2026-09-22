@@ -67,14 +67,14 @@ export default function Dashboard() {
       const status = task.status === 'done' ? 'todo' : 'done'
       await api.patch(`/colocation/tasks/${task.id}`, { status })
       setColocation({ ...colocation, tasks: colocation.tasks.map(t => t.id === task.id ? { ...t, status } : t) })
-    } catch { }
+    } catch { setError('Erreur') }
   }
 
   const deleteTask = async (id) => {
     try {
       await api.delete(`/colocation/tasks/${id}`)
       setColocation({ ...colocation, tasks: colocation.tasks.filter(t => t.id !== id) })
-    } catch { }
+    } catch { setError('Erreur') }
   }
 
   const addCourse = async () => {
@@ -83,14 +83,14 @@ export default function Dashboard() {
       const res = await api.post(`/colocation/${colocation.id}/groceries`, { name: newCourse })
       setColocation({ ...colocation, groceries: [res.data, ...colocation.groceries] })
       setNewCourse('')
-    } catch { }
+    } catch { setError('Erreur') }
   }
 
   const toggleGrocery = async (item) => {
     try {
       await api.patch(`/colocation/groceries/${item.id}`, { isBought: !item.isBought })
       setColocation({ ...colocation, groceries: colocation.groceries.map(g => g.id === item.id ? { ...g, isBought: !g.isBought } : g) })
-    } catch { }
+    } catch { setError('Erreur') }
   }
 
   const addExpense = async () => {
@@ -100,14 +100,14 @@ export default function Dashboard() {
       setColocation({ ...colocation, expenses: [res.data, ...colocation.expenses] })
       setNewExpense({ amount: '', category: '', description: '' })
       setShowExpenseForm(false)
-    } catch { }
+    } catch { setError('Erreur') }
   }
 
   const deleteExpense = async (id) => {
     try {
       await api.delete(`/colocation/expenses/${id}`)
       setColocation({ ...colocation, expenses: colocation.expenses.filter(e => e.id !== id) })
-    } catch { }
+    } catch { setError('Erreur') }
   }
 
   const totalExpenses = colocation?.expenses?.reduce((sum, e) => sum + e.amount, 0) || 0
@@ -204,7 +204,7 @@ export default function Dashboard() {
                 {colocation.expenses.length === 0 ? (
                   <p style={{ fontSize: 14, color: '#6B655A', margin: '8px 0' }}>Aucune dépense enregistrée.</p>
                 ) : (
-                  colocation.expenses.slice(0, 8).map((e, i) => (
+                  colocation.expenses.slice(0, 8).map((e) => (
                     <div key={e.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto auto', gap: 10, alignItems: 'baseline', padding: '7px 0', borderBottom: '1px dotted #CFC8B6' }}>
                       <div style={{ minWidth: 0 }}>
                         <span style={{ fontSize: 16 }}>{e.category}</span>
