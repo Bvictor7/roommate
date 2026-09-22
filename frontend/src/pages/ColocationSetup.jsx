@@ -24,7 +24,7 @@ export default function ColocationSetup() {
     setError('')
     setLoading(true)
     try {
-      const res = await api.post('/colocations', { name })
+      const res = await api.post('/colocation', { name })
       setCreatedCode(res.data.inviteCode)
     } catch (err) {
       setError(err.response?.data?.message || 'Erreur lors de la création de la colocation')
@@ -38,8 +38,8 @@ export default function ColocationSetup() {
     setError('')
     setLoading(true)
     try {
-      const res = await api.post('/colocations/join', { inviteCode })
-      const colocation = await api.get(`/colocations/${res.data.colocationId}`)
+      const res = await api.post('/colocation/join', { inviteCode })
+      const colocation = await api.get(`/colocation/${res.data.colocationId}`)
       setJoinedColocationName(colocation.data.name)
     } catch (err) {
       setError(err.response?.data?.message || 'Code d\'invitation invalide')

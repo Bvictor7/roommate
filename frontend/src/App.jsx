@@ -33,7 +33,7 @@ function useHasColocation(user) {
     }
     let cancelled = false
     setStatus('loading')
-    api.get('/colocations/me')
+    api.get('/colocation/me')
       .then(() => { if (!cancelled) setStatus('yes') })
       .catch(() => { if (!cancelled) setStatus('no') })
     return () => { cancelled = true }
