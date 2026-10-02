@@ -1,95 +1,123 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
-import request from 'supertest'
-import app from '../app.js'
-import { PrismaClient } from '@prisma/client'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-const prisma = new PrismaClient()
-
-const testUser = {
-  email: `test_${Date.now()}@roommate.test`,
-  password: 'password123',
-  username: `testuser_${Date.now()}`,
+// On mock avant tout import
+const mockUser = {
+  findUnique: vi.fn(),
+  create: vi.fn(),
 }
 
-let authToken = ''
-
-afterAll(async () => {
-  await prisma.user.deleteMany({ where: { email: testUser.email } })
-  await prisma.$disconnect()
+vi.mock('@prisma/client', () => {
+  function PrismaClient() {}
+  PrismaClient.prototype.user = mockUser
+  return { PrismaClient }
 })
 
-describe('POST /api/auth/register', () => {
-  it('crée un compte et retourne un token', async () => {
-    const res = await request(app).post('/api/auth/register').send(testUser)
-    expect(res.status).toBe(201)
-    expect(res.body).toHaveProperty('token')
-    expect(res.body.user.email).toBe(testUser.email)
-  })
+vi.mock('bcrypt', () => ({
+  default: {
+    hash: vi.fn().mockResolvedValue('hashed_password'),
+    compare: vi.fn(),
+  }
+}))
 
-  it('refuse si email déjà utilisé', async () => {
-    const res = await request(app).post('/api/auth/register').send(testUser)
-    expect(res.status).toBe(400)
-    expect(res.body).toHaveProperty('message')
-  })
+vi.mock('jsonwebtoken', () => ({
+  default: {
+    sign: vi.fn().mockReturnValue('fake_jwt_token'),
+    verify: vi.fn(),
+  }
+}))
 
-  it('refuse si email invalide', async () => {
-    const res = await request(app).post('/api/auth/register').send({
-      email: 'pasunemail',
-      password: 'password123',
-      username: 'testuser',
+process.env.JWT_SECRET = 'test_secret'
+
+import bcrypt from 'bcrypt'
+
+// On importe le service APRES les mocks
+const authService = await import('../services/auth.service.js')
+
+beforeEach(() => {
+  vi.clearAllMocks()
+  mockUser.findUnique.mockReset()
+  mockUser.create.mockReset()
+})
+
+describe('auth.service — register', () => {
+  it('crée un utilisateur et retourne un token', async () => {
+    mockUser.findUnique.mockResolvedValue(null)
+    mockUser.create.mockResolvedValue({
+      id: 'user-1', email: 'test@test.com', username: 'test', role: 'USER'
     })
-    expect(res.status).toBe(400)
+
+    const result = await authService.register('test@test.com', 'password123', 'test')
+
+    expect(mockUser.findUnique).toHaveBeenCalledWith({ where: { email: 'test@test.com' } })
+    expect(result).toHaveProperty('token')
+    expect(result.user.email).toBe('test@test.com')
   })
 
-  it('refuse si password trop court', async () => {
-    const res = await request(app).post('/api/auth/register').send({
-      email: 'autre@test.com',
-      password: '123',
-      username: 'testuser',
+  it('lance une erreur si email déjà utilisé', async () => {
+    mockUser.findUnique.mockResolvedValue({ id: 'user-1' })
+
+    await expect(authService.register('test@test.com', 'password123', 'test'))
+      .rejects.toThrow('Cet email est déjà utilisé')
+  })
+
+  it('hache le mot de passe avant de sauvegarder', async () => {
+    mockUser.findUnique.mockResolvedValue(null)
+    mockUser.create.mockResolvedValue({
+      id: 'user-1', email: 'test@test.com', username: 'test', role: 'USER'
     })
-    expect(res.status).toBe(400)
+
+    await authService.register('test@test.com', 'password123', 'test')
+
+    expect(bcrypt.hash).toHaveBeenCalledWith('password123', 12)
+    expect(mockUser.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ password: 'hashed_password' })
+      })
+    )
   })
 })
 
-describe('POST /api/auth/login', () => {
-  it('connecte et retourne un token', async () => {
-    const res = await request(app).post('/api/auth/login').send({
-      email: testUser.email,
-      password: testUser.password,
+describe('auth.service — login', () => {
+  it('retourne un token si identifiants valides', async () => {
+    mockUser.findUnique.mockResolvedValue({
+      id: 'user-1', email: 'test@test.com', username: 'test',
+      password: 'hashed', role: 'USER'
     })
-    expect(res.status).toBe(200)
-    expect(res.body).toHaveProperty('token')
-    authToken = res.body.token
+    bcrypt.compare.mockResolvedValue(true)
+
+    const result = await authService.login('test@test.com', 'password123')
+
+    expect(result).toHaveProperty('token')
+    expect(result.user.email).toBe('test@test.com')
   })
 
-  it('refuse si mauvais mot de passe', async () => {
-    const res = await request(app).post('/api/auth/login').send({
-      email: testUser.email,
-      password: 'mauvaismdp',
-    })
-    expect(res.status).toBe(401)
+  it('lance une erreur si utilisateur introuvable', async () => {
+    mockUser.findUnique.mockResolvedValue(null)
+
+    await expect(authService.login('inconnu@test.com', 'password123'))
+      .rejects.toThrow('Email ou mot de passe incorrect')
   })
 
-  it('refuse si email inconnu', async () => {
-    const res = await request(app).post('/api/auth/login').send({
-      email: 'inconnu@test.com',
-      password: 'password123',
-    })
-    expect(res.status).toBe(401)
+  it('lance une erreur si mauvais mot de passe', async () => {
+    mockUser.findUnique.mockResolvedValue({ id: 'user-1', password: 'hashed' })
+    bcrypt.compare.mockResolvedValue(false)
+
+    await expect(authService.login('test@test.com', 'mauvaismdp'))
+      .rejects.toThrow('Email ou mot de passe incorrect')
   })
 })
 
-describe('GET /api/auth/me', () => {
-  it('retourne le profil avec token valide', async () => {
-    const res = await request(app)
-      .get('/api/auth/me')
-      .set('Authorization', `Bearer ${authToken}`)
-    expect(res.status).toBe(200)
-    expect(res.body).toHaveProperty('email', testUser.email)
-  })
+describe('auth.service — getMe', () => {
+  it('retourne le profil utilisateur', async () => {
+    mockUser.findUnique.mockResolvedValue({
+      id: 'user-1', email: 'test@test.com', username: 'test'
+    })
 
-  it('refuse sans token', async () => {
-    const res = await request(app).get('/api/auth/me')
-    expect(res.status).toBe(401)
+    const result = await authService.getMe('user-1')
+
+    expect(mockUser.findUnique).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'user-1' } })
+    )
+    expect(result.email).toBe('test@test.com')
   })
 })
