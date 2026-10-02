@@ -1,0 +1,76 @@
+name: CI — Tests RoomMate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  tests-unitaires:
+    name: Tests unitaires (Vitest)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Installer les dépendances backend
+        run: npm ci
+        working-directory: backend
+
+      - name: Générer Prisma Client
+        run: npx prisma generate
+        working-directory: backend
+
+      - name: Lancer les tests unitaires
+        run: npx vitest run src/test/
+        working-directory: backend
+
+      - name: Rapport de couverture
+        run: npx vitest run --coverage src/test/
+        working-directory: backend
+
+  tests-e2e:
+    name: Tests E2E (Playwright)
+    runs-on: ubuntu-latest
+    needs: tests-unitaires
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Installer les dépendances frontend
+        run: npm ci
+        working-directory: frontend
+
+      - name: Installer les navigateurs Playwright
+        run: npx playwright install chromium --with-deps
+        working-directory: frontend
+
+      - name: Lancer les tests E2E
+        run: npx playwright test --project=chromium
+        working-directory: frontend
+
+      - name: Upload rapport Playwright
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: frontend/playwright-report/
+          retention-days: 7
+          
