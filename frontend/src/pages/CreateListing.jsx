@@ -69,13 +69,13 @@ export default function CreateListing() {
 
           <div style={{ display: 'grid', gap: 16 }}>
             <div>
-              <label style={labelStyle}>Titre <span style={{ color: '#6B655A', fontWeight: 400 }}>(min 5 car.)</span></label>
-              <input type="text" required minLength="5" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="Ex: Grande chambre lumineuse Paris 11e" style={inputStyle} />
+              <label htmlFor="title" style={labelStyle}>Titre <span style={{ color: '#6B655A', fontWeight: 400 }}>(min 5 car.)</span></label>
+              <input id="title" type="text" required minLength="5" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="Ex: Grande chambre lumineuse Paris 11e" style={inputStyle} />
             </div>
 
             <div>
-              <label style={labelStyle}>Type de logement</label>
-              <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} style={inputStyle}>
+              <label htmlFor="type" style={labelStyle}>Type de logement</label>
+              <select id="type" value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} style={inputStyle}>
                 <option value="chambre">Chambre</option>
                 <option value="appartement">Appartement</option>
                 <option value="maison">Maison</option>
@@ -83,29 +83,29 @@ export default function CreateListing() {
             </div>
 
             <div>
-              <label style={labelStyle}>Description <span style={{ color: '#6B655A', fontWeight: 400 }}>(min 20 car.)</span></label>
-              <textarea required minLength="20" rows="4" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Décrivez votre logement, l'ambiance, les règles..." style={{ ...inputStyle, resize: 'vertical' }} />
+              <label htmlFor="description" style={labelStyle}>Description <span style={{ color: '#6B655A', fontWeight: 400 }}>(min 20 car.)</span></label>
+              <textarea id="description" required minLength="20" rows="4" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Décrivez votre logement, l'ambiance, les règles..." style={{ ...inputStyle, resize: 'vertical' }} />
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div>
-                <label style={labelStyle}>Ville</label>
-                <input type="text" required value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} placeholder="Paris" style={inputStyle} />
+                <label htmlFor="city" style={labelStyle}>Ville</label>
+                <input id="city" type="text" required value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} placeholder="Paris" style={inputStyle} />
               </div>
               <div>
-                <label style={labelStyle}>Code postal</label>
-                <input type="text" required value={form.postalCode} onChange={e => setForm({ ...form, postalCode: e.target.value })} placeholder="75011" style={inputStyle} />
+                <label htmlFor="postalCode" style={labelStyle}>Code postal</label>
+                <input id="postalCode" type="text" required value={form.postalCode} onChange={e => setForm({ ...form, postalCode: e.target.value })} placeholder="75011" style={inputStyle} />
               </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div>
-                <label style={labelStyle}>Loyer (€/mois)</label>
-                <input type="number" required value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} placeholder="650" style={inputStyle} />
+                <label htmlFor="price" style={labelStyle}>Loyer (€/mois)</label>
+                <input id="price" type="number" required value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} placeholder="650" style={inputStyle} />
               </div>
               <div>
-                <label style={labelStyle}>Disponible le</label>
-                <input type="date" required value={form.availableDate} onChange={e => setForm({ ...form, availableDate: e.target.value })} style={inputStyle} />
+                <label htmlFor="availableDate" style={labelStyle}>Disponible le</label>
+                <input id="availableDate" type="date" required value={form.availableDate} onChange={e => setForm({ ...form, availableDate: e.target.value })} style={inputStyle} />
               </div>
             </div>
 
