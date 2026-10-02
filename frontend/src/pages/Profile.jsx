@@ -10,50 +10,63 @@ export default function Profile() {
     navigate('/')
   }
 
-  return (
-    <div className="min-h-[calc(100vh-56px)] bg-[#0f1117] px-4 py-12">
-      <div className="max-w-lg mx-auto">
-        <h1 className="text-2xl font-bold text-white mb-8">Mon compte</h1>
+  const initials = user?.username?.[0]?.toUpperCase() || '?'
 
-        <div className="bg-[#1a1d27] rounded-2xl border border-white/10 p-6 sm:p-8 space-y-6">
-          {/* Avatar */}
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-teal-400 flex items-center justify-center text-[#0f1117] text-2xl font-bold">
-              {user?.username?.[0]?.toUpperCase() || '?'}
+  return (
+    <main style={{ minHeight: 'calc(100vh - 56px)', background: '#F4EEE2', padding: '48px clamp(14px,3vw,34px)', fontFamily: 'Karla, system-ui, sans-serif', color: '#2A2723' }}>
+      <div style={{ maxWidth: 480, margin: '0 auto' }}>
+        <h1 style={{ fontFamily: 'Newsreader, serif', fontWeight: 500, fontSize: 'clamp(28px,4vw,38px)', margin: '0 0 28px', letterSpacing: '-.02em' }}>
+          Mon compte
+        </h1>
+
+        <div style={{ background: '#FBF7EE', border: '1px solid #2A2723', padding: 'clamp(20px,3vw,32px)', display: 'grid', gap: 24 }}>
+
+          {/* Avatar + infos */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div style={{ width: 56, height: 56, background: '#1F4438', color: '#F2EEE0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Newsreader, serif', fontSize: 26, fontWeight: 600, flexShrink: 0 }}>
+              {initials}
             </div>
             <div>
-              <p className="text-lg font-bold text-white">{user?.username}</p>
-              <p className="text-white/50 text-sm">{user?.email}</p>
+              <p style={{ fontFamily: 'Newsreader, serif', fontSize: 22, fontWeight: 600, margin: 0 }}>{user?.username}</p>
+              <p style={{ fontSize: 14, color: '#6B655A', margin: '3px 0 0', fontFamily: "'Cutive Mono', monospace" }}>{user?.email}</p>
             </div>
           </div>
 
-          <div className="border-t border-white/10 pt-6 space-y-4">
-            <div className="space-y-1">
-              <p className="text-xs text-white/40 uppercase tracking-widest">Nom d'utilisateur</p>
-              <p className="text-white text-sm">{user?.username}</p>
+          {/* Détails */}
+          <div style={{ borderTop: '1px solid #D4C9B8', paddingTop: 20, display: 'grid', gap: 14 }}>
+            <div>
+              <p style={{ fontFamily: "'Cutive Mono', monospace", fontSize: 12, letterSpacing: '.1em', color: '#6B655A', margin: '0 0 4px' }}>NOM D'UTILISATEUR</p>
+              <p style={{ fontSize: 16, margin: 0 }}>{user?.username}</p>
             </div>
-            <div className="space-y-1">
-              <p className="text-xs text-white/40 uppercase tracking-widest">Email</p>
-              <p className="text-white text-sm">{user?.email}</p>
+            <div>
+              <p style={{ fontFamily: "'Cutive Mono', monospace", fontSize: 12, letterSpacing: '.1em', color: '#6B655A', margin: '0 0 4px' }}>EMAIL</p>
+              <p style={{ fontSize: 16, margin: 0 }}>{user?.email}</p>
             </div>
+            {user?.role && (
+              <div>
+                <p style={{ fontFamily: "'Cutive Mono', monospace", fontSize: 12, letterSpacing: '.1em', color: '#6B655A', margin: '0 0 4px' }}>RÔLE</p>
+                <p style={{ fontSize: 16, margin: 0 }}>{user.role}</p>
+              </div>
+            )}
           </div>
 
-          <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row gap-3">
+          {/* Actions */}
+          <div style={{ borderTop: '1px solid #D4C9B8', paddingTop: 20, display: 'flex', flexWrap: 'wrap', gap: 10 }}>
             <button
               onClick={() => navigate('/create-listing')}
-              className="flex-1 py-3 bg-teal-400 text-[#0f1117] rounded-xl font-semibold hover:bg-teal-300 transition text-sm"
+              style={{ flex: 1, padding: '12px 0', background: '#B4472C', color: '#F9F5EC', border: 'none', fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'Karla, sans-serif', minWidth: 160 }}
             >
               + Publier une annonce
             </button>
             <button
               onClick={handleLogout}
-              className="flex-1 py-3 bg-white/5 text-white/60 rounded-xl font-semibold hover:bg-red-500/10 hover:text-red-400 transition text-sm border border-white/10"
+              style={{ flex: 1, padding: '12px 0', background: 'transparent', border: '1.5px solid #2A2723', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'Karla, sans-serif', color: '#2A2723', minWidth: 160 }}
             >
               Déconnexion
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </main>
   )
 }
