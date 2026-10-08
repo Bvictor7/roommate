@@ -1,4 +1,8 @@
 node_modules
+coverage
 .env
-.git
-*.log
+.env.*
+*.md
+src/test
+src/tests
+.github
