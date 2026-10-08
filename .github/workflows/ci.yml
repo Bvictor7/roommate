@@ -32,5 +32,12 @@ jobs:
         run: docker build -t roommate-backend:${{ github.sha }} ./backend
       - name: Build image frontend
         run: docker build -t roommate-frontend:${{ github.sha }} ./frontend
-      - name: Vérifier les images
-        run: docker images | grep roommate
+
+  deploy-staging:
+    name: Deploy staging (Render)
+    runs-on: ubuntu-latest
+    needs: build-docker
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Trigger Render deploy
+        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
