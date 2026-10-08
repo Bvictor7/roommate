@@ -7,6 +7,8 @@ import authRoutes from './routes/auth.js'
 import listingRoutes from './routes/listings.js'
 import colocationRoutes from './routes/colocations.js'
 import errorHandler from './middleware/errorHandler.js'
+import helmet from 'helmet'
+
 
 dotenv.config()
 
@@ -15,6 +17,7 @@ const PORT = process.env.PORT || 3000
 
 app.use(cors())
 app.use(express.json())
+app.use(helmet())
 
 const format = process.env.NODE_ENV === 'production' ? 'combined' : 'dev'
 app.use(morgan(format))
@@ -43,4 +46,4 @@ const server = app.listen(PORT, () => {
 server.on('error', (err) => {
   console.error('Server error:', err.message)
   process.exit(1)
-})
+})// Already imported above - just add helmet
