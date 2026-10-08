@@ -125,4 +125,3 @@ Les variables `JWT_SECRET` et `JWT_REFRESH_SECRET` attendues par `docker-compose
 - **CRUD annonces** : création, liste paginée, détail, modification et suppression (réservées à l'auteur de l'annonce)
 - **Gestion de colocation** : création d'une colocation (génère un code d'invitation), adhésion à une colocation existante via ce code, consultation de la colocation et de ses membres
 - **RBAC** : rôle (`USER`/`ADMIN`) porté par l'utilisateur et embarqué dans le JWT, middleware `checkRole` disponible pour restreindre l'accès par rôle
-# test rollback
