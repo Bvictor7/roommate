@@ -1,5 +1,7 @@
 # RoomMate
 
+![CI](https://github.com/Bvictor7/roommate/actions/workflows/ci.yml/badge.svg) ![Netlify](https://img.shields.io/badge/netlify-deployed-brightgreen) ![License](https://img.shields.io/badge/license-ISC-blue)
+
 Plateforme de gestion de colocation : publication et recherche d'annonces de logement, puis gestion de la colocation une fois installé (colocataires, tâches, dépenses, courses).
 
 ## Stack technique
