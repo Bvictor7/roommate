@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node'
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
@@ -9,8 +10,13 @@ import colocationRoutes from './routes/colocations.js'
 import errorHandler from './middleware/errorHandler.js'
 import helmet from 'helmet'
 
-
 dotenv.config()
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  environment: process.env.NODE_ENV || 'development',
+  tracesSampleRate: 1.0,
+})
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -37,6 +43,7 @@ app.use((req, res) => {
   res.status(404).json({ message: 'Route non trouvée' })
 })
 
+app.use(Sentry.expressErrorHandler())
 app.use(errorHandler)
 
 const server = app.listen(PORT, () => {
@@ -46,4 +53,4 @@ const server = app.listen(PORT, () => {
 server.on('error', (err) => {
   console.error('Server error:', err.message)
   process.exit(1)
-})// Already imported above - just add helmet
+})
