@@ -42,10 +42,8 @@ jobs:
     needs: tests-unitaires
     steps:
       - uses: actions/checkout@v4
-      - name: Build image backend
-        run: docker build -t roommate-backend:${{ github.sha }} ./backend
-      - name: Build image frontend
-        run: docker build -t roommate-frontend:${{ github.sha }} ./frontend
+      - run: docker build -t roommate-backend:${{ github.sha }} ./backend
+      - run: docker build -t roommate-frontend:${{ github.sha }} ./frontend
 
   deploy-staging:
     name: Deploy staging (Render)
@@ -57,13 +55,14 @@ jobs:
         run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
 
   deploy-prod:
-    name: Deploy prod (Netlify + Render)
+    name: Deploy prod (approuvé)
     runs-on: ubuntu-latest
     needs: deploy-staging
     if: github.ref == 'refs/heads/main'
+    environment: production
     steps:
-      - name: Confirm prod deploy
+      - name: Deploy prod
         run: |
-          echo "✅ Prod déployé automatiquement"
+          echo "✅ Deploy prod approuvé et déployé"
           echo "Frontend: https://roommate-cda.netlify.app"
           echo "Backend: https://roommate-y4n7.onrender.com"
