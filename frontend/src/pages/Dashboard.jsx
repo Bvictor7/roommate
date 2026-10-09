@@ -1,12 +1,37 @@
 import { useState, useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
+import { useSocket } from '../context/useSocket'
 import api from '../services/api'
 
 const noiseUrl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23w)' opacity='0.07'/%3E%3C/svg%3E"
 
+// Insère ou remplace un élément (par id) dans une liste de la colocation.
+// Idempotent : la réponse API et l'événement socket d'une même action ne créent pas de doublon.
+const upsertInto = (key, item) => (prev) => {
+  if (!prev) return prev
+  const list = prev[key]
+  const exists = list.some(x => x.id === item.id)
+  return { ...prev, [key]: exists ? list.map(x => x.id === item.id ? item : x) : [item, ...list] }
+}
+
+const removeFrom = (key, id) => (prev) => prev && { ...prev, [key]: prev[key].filter(x => x.id !== id) }
+
+// Événement socket → mise à jour du state (les suppressions transmettent { id })
+const SOCKET_EVENTS = {
+  'task:created': (task) => upsertInto('tasks', task),
+  'task:updated': (task) => upsertInto('tasks', task),
+  'task:deleted': ({ id }) => removeFrom('tasks', id),
+  'expense:created': (expense) => upsertInto('expenses', expense),
+  'expense:deleted': ({ id }) => removeFrom('expenses', id),
+  'grocery:created': (item) => upsertInto('groceries', item),
+  'grocery:updated': (item) => upsertInto('groceries', item),
+  'grocery:deleted': ({ id }) => removeFrom('groceries', id),
+}
+
 export default function Dashboard() {
   const { user } = useAuth()
+  const socket = useSocket()
   const [colocation, setColocation] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -24,11 +49,22 @@ export default function Dashboard() {
       .finally(() => setLoading(false))
   }, [])
 
+  // Mises à jour temps réel des autres colocataires
+  useEffect(() => {
+    if (!socket) return
+    const handlers = Object.entries(SOCKET_EVENTS).map(([event, toUpdater]) => {
+      const handler = (payload) => setColocation(toUpdater(payload))
+      socket.on(event, handler)
+      return [event, handler]
+    })
+    return () => handlers.forEach(([event, handler]) => socket.off(event, handler))
+  }, [socket])
+
   const addTask = async () => {
     if (!newTask.trim() || !colocation) return
     try {
       const res = await api.post(`/colocation/${colocation.id}/tasks`, { title: newTask })
-      setColocation({ ...colocation, tasks: [res.data, ...colocation.tasks] })
+      setColocation(upsertInto('tasks', res.data))
       setNewTask('')
     } catch { setError('Erreur') }
   }
@@ -36,15 +72,15 @@ export default function Dashboard() {
   const toggleTask = async (task) => {
     try {
       const status = task.status === 'done' ? 'todo' : 'done'
-      await api.patch(`/colocation/tasks/${task.id}`, { status })
-      setColocation({ ...colocation, tasks: colocation.tasks.map(t => t.id === task.id ? { ...t, status } : t) })
+      const res = await api.patch(`/colocation/tasks/${task.id}`, { status })
+      setColocation(upsertInto('tasks', res.data))
     } catch { setError('Erreur') }
   }
 
   const deleteTask = async (id) => {
     try {
       await api.delete(`/colocation/tasks/${id}`)
-      setColocation({ ...colocation, tasks: colocation.tasks.filter(t => t.id !== id) })
+      setColocation(removeFrom('tasks', id))
     } catch { setError('Erreur') }
   }
 
@@ -52,15 +88,15 @@ export default function Dashboard() {
     if (!newCourse.trim() || !colocation) return
     try {
       const res = await api.post(`/colocation/${colocation.id}/groceries`, { name: newCourse })
-      setColocation({ ...colocation, groceries: [res.data, ...colocation.groceries] })
+      setColocation(upsertInto('groceries', res.data))
       setNewCourse('')
     } catch { setError('Erreur') }
   }
 
   const toggleGrocery = async (item) => {
     try {
-      await api.patch(`/colocation/groceries/${item.id}`, { isBought: !item.isBought })
-      setColocation({ ...colocation, groceries: colocation.groceries.map(g => g.id === item.id ? { ...g, isBought: !g.isBought } : g) })
+      const res = await api.patch(`/colocation/groceries/${item.id}`, { isBought: !item.isBought })
+      setColocation(upsertInto('groceries', res.data))
     } catch { setError('Erreur') }
   }
 
@@ -68,7 +104,7 @@ export default function Dashboard() {
     if (!newExpense.amount || !newExpense.category || !colocation) return
     try {
       const res = await api.post(`/colocation/${colocation.id}/expenses`, { ...newExpense, paidBy: user?.username || 'Moi' })
-      setColocation({ ...colocation, expenses: [res.data, ...colocation.expenses] })
+      setColocation(upsertInto('expenses', res.data))
       setNewExpense({ amount: '', category: '', description: '' })
       setShowExpenseForm(false)
     } catch { setError('Erreur') }
@@ -77,7 +113,7 @@ export default function Dashboard() {
   const deleteExpense = async (id) => {
     try {
       await api.delete(`/colocation/expenses/${id}`)
-      setColocation({ ...colocation, expenses: colocation.expenses.filter(e => e.id !== id) })
+      setColocation(removeFrom('expenses', id))
     } catch { setError('Erreur') }
   }
 
