@@ -6,10 +6,12 @@ export default function TopNav() {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
 
+  // « Mon foyer » et « Profil » ne concernent que les utilisateurs connectés
   const tabs = [
     { label: 'Accueil', path: '/' },
-    { label: 'Mon foyer', path: '/dashboard' },
+    ...(user ? [{ label: 'Mon foyer', path: '/dashboard' }] : []),
     { label: 'Annonces', path: '/listings' },
+    ...(user ? [{ label: 'Profil', path: '/profile' }] : []),
   ]
 
   const handleLogout = () => {

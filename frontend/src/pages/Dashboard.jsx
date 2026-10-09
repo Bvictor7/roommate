@@ -100,6 +100,13 @@ export default function Dashboard() {
     } catch { setError('Erreur') }
   }
 
+  const deleteGrocery = async (id) => {
+    try {
+      await api.delete(`/colocation/groceries/${id}`)
+      setColocation(removeFrom('groceries', id))
+    } catch { setError('Erreur') }
+  }
+
   const addExpense = async () => {
     if (!newExpense.amount || !newExpense.category || !colocation) return
     try {
@@ -235,6 +242,7 @@ export default function Dashboard() {
                     {g.isBought && <span style={{ color: '#F4EEE2', fontSize: 12 }}>✓</span>}
                   </button>
                   <span style={{ flex: 1, fontSize: 16, textDecoration: g.isBought ? 'line-through' : 'none', color: g.isBought ? '#9A9489' : '#2A2723' }}>{g.name}</span>
+                  <button onClick={() => deleteGrocery(g.id)} aria-label={`Supprimer ${g.name}`} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B4472C', fontSize: 14, padding: 0 }}>✕</button>
                 </div>
               ))}
               {colocation.groceries.length === 0 && <p style={{ fontSize: 14, color: '#6B655A', margin: '8px 0' }}>Liste vide.</p>}
