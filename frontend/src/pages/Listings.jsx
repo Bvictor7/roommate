@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import api from '../services/api'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/useAuth'
 import ListingsMap from '../components/ListingsMap'
 
 const filters = ['Toulouse', '≤ 500 €', 'Meublé', 'Dispo. en octobre', 'Animaux OK']
@@ -13,18 +13,12 @@ export default function Listings() {
   const { user } = useAuth()
   const navigate = useNavigate()
 
-  useEffect(() => { fetchListings() }, [])
-
-  const fetchListings = async () => {
-    try {
-      const res = await api.get('/listings')
-      setListings(Array.isArray(res.data) ? res.data : res.data?.listings || res.data?.data || [])
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setLoading(false)
-    }
-  }
+  useEffect(() => {
+    api.get('/listings')
+      .then(res => setListings(Array.isArray(res.data) ? res.data : res.data?.listings || res.data?.data || []))
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false))
+  }, [])
 
   const handleDelete = async (id) => {
     if (!window.confirm('Supprimer cette annonce ?')) return
@@ -104,7 +98,7 @@ export default function Listings() {
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr)', gap: 0 }}>
-            {listings.map((l, i) => (
+            {listings.map((l) => (
               <div key={l.id} style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(14px,2.4vw,28px)', alignItems: 'flex-start', padding: 'clamp(16px,2.6vw,26px) 0', borderBottom: '1px solid #C7C0AE' }}>
                 {/* Photo placeholder */}
                 <div style={{ flex: '1 1 240px', minWidth: 180, aspectRatio: '4/3', border: '1px solid #2A2723', background: 'repeating-linear-gradient(135deg,#E9E1D0 0 9px,#F4EEE2 9px 18px)', display: 'flex', alignItems: 'flex-end', padding: 10 }}>

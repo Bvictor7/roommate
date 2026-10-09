@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useAuth } from '../context/AuthContext'
+import { Navigate } from 'react-router-dom'
+import { useAuth } from '../context/useAuth'
 import api from '../services/api'
 
 const noiseUrl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23w)' opacity='0.07'/%3E%3C/svg%3E"
@@ -10,48 +11,18 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  // Onboarding
-  const [showCreate, setShowCreate] = useState(false)
-  const [showJoin, setShowJoin] = useState(false)
-  const [colocName, setColocName] = useState('')
-  const [inviteCode, setInviteCode] = useState('')
-
   // Forms
   const [newTask, setNewTask] = useState('')
   const [newCourse, setNewCourse] = useState('')
   const [newExpense, setNewExpense] = useState({ amount: '', category: '', description: '' })
   const [showExpenseForm, setShowExpenseForm] = useState(false)
 
-  useEffect(() => { fetchColocation() }, [])
-
-  const fetchColocation = async () => {
-    try {
-      const res = await api.get('/colocation/me')
-      setColocation(res.data)
-    } catch (err) {
-      if (err.response?.status !== 404) setError('Erreur de chargement')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const createColocation = async () => {
-    if (!colocName.trim()) return
-    try {
-      const res = await api.post('/colocation', { name: colocName })
-      setColocation(res.data)
-      setShowCreate(false)
-    } catch { setError('Erreur lors de la création') }
-  }
-
-  const joinColocation = async () => {
-    if (!inviteCode.trim()) return
-    try {
-      await api.post('/colocation/join', { inviteCode })
-      fetchColocation()
-      setShowJoin(false)
-    } catch { setError('Code invalide') }
-  }
+  useEffect(() => {
+    api.get('/colocation/me')
+      .then(res => setColocation(res.data))
+      .catch(err => { if (err.response?.status !== 404) setError('Erreur de chargement') })
+      .finally(() => setLoading(false))
+  }, [])
 
   const addTask = async () => {
     if (!newTask.trim() || !colocation) return
@@ -122,52 +93,14 @@ export default function Dashboard() {
     </div>
   )
 
-  // Onboarding
-  if (!colocation) return (
-    <main style={{ minHeight: '100vh', background: '#F4EEE2', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px clamp(14px,3vw,34px)', fontFamily: 'Karla, system-ui, sans-serif', color: '#2A2723' }}>
-      <div style={{ width: '100%', maxWidth: 440 }}>
-        <h1 style={{ fontFamily: 'Newsreader, serif', fontWeight: 500, fontSize: 'clamp(28px,4vw,38px)', margin: '0 0 6px', letterSpacing: '-.02em' }}>
-          Bienvenue {user?.username}
-        </h1>
-        <p style={{ margin: '0 0 28px', fontSize: 16, color: '#6B655A' }}>Crée un foyer ou rejoins-en un pour commencer.</p>
-
-        {error && <div style={{ background: '#F5E8E5', border: '1px solid #B4472C', color: '#B4472C', fontSize: 14, padding: '10px 14px', marginBottom: 16 }}>{error}</div>}
-
-        {!showCreate && !showJoin && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <button onClick={() => setShowCreate(true)} style={{ padding: '13px 0', background: '#B4472C', color: '#F9F5EC', fontSize: 16, fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: 'Karla, sans-serif' }}>
-              Créer mon foyer
-            </button>
-            <button onClick={() => setShowJoin(true)} style={{ padding: '13px 0', background: 'transparent', color: '#2A2723', fontSize: 16, fontWeight: 600, border: '1.5px solid #2A2723', cursor: 'pointer', fontFamily: 'Karla, sans-serif' }}>
-              Rejoindre avec un code
-            </button>
-          </div>
-        )}
-
-        {showCreate && (
-          <div style={{ background: '#FBF7EE', border: '1px solid #2A2723', padding: 24 }}>
-            <p style={{ margin: '0 0 12px', fontWeight: 600 }}>Nom du foyer</p>
-            <input value={colocName} onChange={e => setColocName(e.target.value)} placeholder="Ex: Le Loft Vert" style={{ width: '100%', padding: '10px 12px', border: '1px solid #2A2723', background: '#F4EEE2', fontSize: 15, fontFamily: 'Karla, sans-serif', color: '#2A2723', outline: 'none', boxSizing: 'border-box', marginBottom: 12 }} />
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button onClick={() => setShowCreate(false)} style={{ flex: 1, padding: '10px 0', background: 'transparent', border: '1px solid #2A2723', cursor: 'pointer', fontFamily: 'Karla, sans-serif', fontSize: 15 }}>Annuler</button>
-              <button onClick={createColocation} style={{ flex: 1, padding: '10px 0', background: '#B4472C', color: '#F9F5EC', border: 'none', cursor: 'pointer', fontFamily: 'Karla, sans-serif', fontSize: 15, fontWeight: 700 }}>Créer</button>
-            </div>
-          </div>
-        )}
-
-        {showJoin && (
-          <div style={{ background: '#FBF7EE', border: '1px solid #2A2723', padding: 24 }}>
-            <p style={{ margin: '0 0 12px', fontWeight: 600 }}>Code d'invitation</p>
-            <input value={inviteCode} onChange={e => setInviteCode(e.target.value)} placeholder="Colle le code ici" style={{ width: '100%', padding: '10px 12px', border: '1px solid #2A2723', background: '#F4EEE2', fontSize: 15, fontFamily: 'Karla, sans-serif', color: '#2A2723', outline: 'none', boxSizing: 'border-box', marginBottom: 12 }} />
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button onClick={() => setShowJoin(false)} style={{ flex: 1, padding: '10px 0', background: 'transparent', border: '1px solid #2A2723', cursor: 'pointer', fontFamily: 'Karla, sans-serif', fontSize: 15 }}>Annuler</button>
-              <button onClick={joinColocation} style={{ flex: 1, padding: '10px 0', background: '#B4472C', color: '#F9F5EC', border: 'none', cursor: 'pointer', fontFamily: 'Karla, sans-serif', fontSize: 15, fontWeight: 700 }}>Rejoindre</button>
-            </div>
-          </div>
-        )}
+  if (!colocation) {
+    if (!error) return <Navigate to="/coloc-setup" replace />
+    return (
+      <div style={{ minHeight: '100vh', background: '#F4EEE2', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, fontFamily: 'Karla, system-ui, sans-serif' }}>
+        <div role="alert" style={{ background: '#F5E8E5', border: '1px solid #B4472C', color: '#B4472C', fontSize: 14, padding: '10px 14px' }}>{error}</div>
       </div>
-    </main>
-  )
+    )
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: '#E9E1D0', backgroundImage: `url("${noiseUrl}")`, fontFamily: 'Karla, system-ui, sans-serif', color: '#2A2723' }}>
