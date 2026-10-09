@@ -3,6 +3,7 @@ import prisma from '../lib/prisma.js'
 const LISTING_CARD_SELECT = {
   id: true,
   title: true,
+  description: true,
   type: true,
   city: true,
   postalCode: true,
