@@ -2,6 +2,7 @@ import express from 'express'
 import prisma from '../lib/prisma.js'
 import auth from '../middleware/auth.js'
 import validate from '../middleware/validate.js'
+import requireColocationMember from '../middleware/requireColocationMember.js'
 import { emitToColocation, joinColocationRoom } from '../lib/socket.js'
 import {
   createColocationSchema,
@@ -14,6 +15,11 @@ import {
 } from '../schemas/colocation.schema.js'
 
 const router = express.Router()
+
+const isMember = requireColocationMember()
+const isTaskMember = requireColocationMember({ model: 'task', param: 'taskId' })
+const isExpenseMember = requireColocationMember({ model: 'expense', param: 'expenseId' })
+const isGroceryMember = requireColocationMember({ model: 'groceryItem', param: 'itemId' })
 
 // Créer une colocation
 router.post('/', auth, validate(createColocationSchema), async (req, res, next) => {
@@ -76,18 +82,18 @@ router.get('/me', auth, async (req, res, next) => {
 })
 
 // --- TASKS ---
-router.post('/:id/tasks', auth, validate(createTaskSchema), async (req, res, next) => {
+router.post('/:colocationId/tasks', auth, isMember, validate(createTaskSchema), async (req, res, next) => {
   try {
     const { title, assignedTo, dueDate } = req.body
     const task = await prisma.task.create({
-      data: { title, assignedTo, dueDate: dueDate ? new Date(dueDate) : null, colocationId: req.params.id }
+      data: { title, assignedTo, dueDate: dueDate ? new Date(dueDate) : null, colocationId: req.colocationId }
     })
     emitToColocation(task.colocationId, 'task:created', task)
     res.status(201).json(task)
   } catch (err) { next(err) }
 })
 
-router.patch('/tasks/:taskId', auth, validate(updateTaskSchema), async (req, res, next) => {
+router.patch('/tasks/:taskId', auth, isTaskMember, validate(updateTaskSchema), async (req, res, next) => {
   try {
     const { title, assignedTo, dueDate, status } = req.body
     const task = await prisma.task.update({
@@ -104,45 +110,47 @@ router.patch('/tasks/:taskId', auth, validate(updateTaskSchema), async (req, res
   } catch (err) { next(err) }
 })
 
-router.delete('/tasks/:taskId', auth, async (req, res, next) => {
+router.delete('/tasks/:taskId', auth, isTaskMember, async (req, res, next) => {
   try {
     await prisma.task.delete({ where: { id: req.params.taskId } })
+    emitToColocation(req.colocationId, 'task:deleted', { id: req.params.taskId })
     res.json({ message: 'Tâche supprimée' })
   } catch (err) { next(err) }
 })
 
 // --- EXPENSES ---
-router.post('/:id/expenses', auth, validate(createExpenseSchema), async (req, res, next) => {
+router.post('/:colocationId/expenses', auth, isMember, validate(createExpenseSchema), async (req, res, next) => {
   try {
     const { amount, category, description, paidBy } = req.body
     const expense = await prisma.expense.create({
-      data: { amount, category, description, paidBy, colocationId: req.params.id }
+      data: { amount, category, description, paidBy, colocationId: req.colocationId }
     })
     emitToColocation(expense.colocationId, 'expense:created', expense)
     res.status(201).json(expense)
   } catch (err) { next(err) }
 })
 
-router.delete('/expenses/:expenseId', auth, async (req, res, next) => {
+router.delete('/expenses/:expenseId', auth, isExpenseMember, async (req, res, next) => {
   try {
     await prisma.expense.delete({ where: { id: req.params.expenseId } })
+    emitToColocation(req.colocationId, 'expense:deleted', { id: req.params.expenseId })
     res.json({ message: 'Dépense supprimée' })
   } catch (err) { next(err) }
 })
 
 // --- GROCERIES ---
-router.post('/:id/groceries', auth, validate(createGrocerySchema), async (req, res, next) => {
+router.post('/:colocationId/groceries', auth, isMember, validate(createGrocerySchema), async (req, res, next) => {
   try {
     const { name } = req.body
     const item = await prisma.groceryItem.create({
-      data: { name, addedBy: req.user.userId, colocationId: req.params.id }
+      data: { name, addedBy: req.user.userId, colocationId: req.colocationId }
     })
     emitToColocation(item.colocationId, 'grocery:created', item)
     res.status(201).json(item)
   } catch (err) { next(err) }
 })
 
-router.patch('/groceries/:itemId', auth, validate(updateGrocerySchema), async (req, res, next) => {
+router.patch('/groceries/:itemId', auth, isGroceryMember, validate(updateGrocerySchema), async (req, res, next) => {
   try {
     const { name, isBought } = req.body
     const item = await prisma.groceryItem.update({
@@ -154,9 +162,10 @@ router.patch('/groceries/:itemId', auth, validate(updateGrocerySchema), async (r
   } catch (err) { next(err) }
 })
 
-router.delete('/groceries/:itemId', auth, async (req, res, next) => {
+router.delete('/groceries/:itemId', auth, isGroceryMember, async (req, res, next) => {
   try {
     await prisma.groceryItem.delete({ where: { id: req.params.itemId } })
+    emitToColocation(req.colocationId, 'grocery:deleted', { id: req.params.itemId })
     res.json({ message: 'Article supprimé' })
   } catch (err) { next(err) }
 })

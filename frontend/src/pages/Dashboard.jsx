@@ -17,12 +17,16 @@ const upsertInto = (key, item) => (prev) => {
 
 const removeFrom = (key, id) => (prev) => prev && { ...prev, [key]: prev[key].filter(x => x.id !== id) }
 
+// Événement socket → mise à jour du state (les suppressions transmettent { id })
 const SOCKET_EVENTS = {
-  'task:created': 'tasks',
-  'task:updated': 'tasks',
-  'expense:created': 'expenses',
-  'grocery:created': 'groceries',
-  'grocery:updated': 'groceries',
+  'task:created': (task) => upsertInto('tasks', task),
+  'task:updated': (task) => upsertInto('tasks', task),
+  'task:deleted': ({ id }) => removeFrom('tasks', id),
+  'expense:created': (expense) => upsertInto('expenses', expense),
+  'expense:deleted': ({ id }) => removeFrom('expenses', id),
+  'grocery:created': (item) => upsertInto('groceries', item),
+  'grocery:updated': (item) => upsertInto('groceries', item),
+  'grocery:deleted': ({ id }) => removeFrom('groceries', id),
 }
 
 export default function Dashboard() {
@@ -48,8 +52,8 @@ export default function Dashboard() {
   // Mises à jour temps réel des autres colocataires
   useEffect(() => {
     if (!socket) return
-    const handlers = Object.entries(SOCKET_EVENTS).map(([event, key]) => {
-      const handler = (item) => setColocation(upsertInto(key, item))
+    const handlers = Object.entries(SOCKET_EVENTS).map(([event, toUpdater]) => {
+      const handler = (payload) => setColocation(toUpdater(payload))
       socket.on(event, handler)
       return [event, handler]
     })
