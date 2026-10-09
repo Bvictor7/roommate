@@ -4,6 +4,7 @@ import * as Sentry from '@sentry/react'
 import App from './App'
 import './index.css'
 import { AuthProvider } from './context/AuthContext'
+import { SocketProvider } from './context/SocketContext'
 
 Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN,
@@ -17,7 +18,9 @@ const root = createRoot(rootElement)
 root.render(
   <StrictMode>
     <AuthProvider>
-      <App />
+      <SocketProvider>
+        <App />
+      </SocketProvider>
     </AuthProvider>
   </StrictMode>
 )
