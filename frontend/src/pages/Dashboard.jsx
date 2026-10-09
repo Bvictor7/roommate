@@ -17,18 +17,12 @@ export default function Dashboard() {
   const [newExpense, setNewExpense] = useState({ amount: '', category: '', description: '' })
   const [showExpenseForm, setShowExpenseForm] = useState(false)
 
-  useEffect(() => { fetchColocation() }, [])
-
-  const fetchColocation = async () => {
-    try {
-      const res = await api.get('/colocation/me')
-      setColocation(res.data)
-    } catch (err) {
-      if (err.response?.status !== 404) setError('Erreur de chargement')
-    } finally {
-      setLoading(false)
-    }
-  }
+  useEffect(() => {
+    api.get('/colocation/me')
+      .then(res => setColocation(res.data))
+      .catch(err => { if (err.response?.status !== 404) setError('Erreur de chargement') })
+      .finally(() => setLoading(false))
+  }, [])
 
   const addTask = async () => {
     if (!newTask.trim() || !colocation) return
