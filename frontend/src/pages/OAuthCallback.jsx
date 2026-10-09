@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/useAuth'
 import api from '../services/api'
 
 export default function OAuthCallback() {
@@ -29,7 +29,7 @@ export default function OAuthCallback() {
     }
 
     fetchUser()
-  }, [])
+  }, [login, navigate])
 
   return (
     <main style={{ minHeight: '100vh', background: '#F4EEE2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Karla, system-ui, sans-serif', color: '#2A2723' }}>
