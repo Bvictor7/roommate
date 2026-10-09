@@ -13,18 +13,12 @@ export default function Listings() {
   const { user } = useAuth()
   const navigate = useNavigate()
 
-  useEffect(() => { fetchListings() }, [])
-
-  const fetchListings = async () => {
-    try {
-      const res = await api.get('/listings')
-      setListings(Array.isArray(res.data) ? res.data : res.data?.listings || res.data?.data || [])
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setLoading(false)
-    }
-  }
+  useEffect(() => {
+    api.get('/listings')
+      .then(res => setListings(Array.isArray(res.data) ? res.data : res.data?.listings || res.data?.data || []))
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false))
+  }, [])
 
   const handleDelete = async (id) => {
     if (!window.confirm('Supprimer cette annonce ?')) return
