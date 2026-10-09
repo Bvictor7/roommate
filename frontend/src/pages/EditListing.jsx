@@ -15,6 +15,7 @@ export default function EditListing() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [loadError, setLoadError] = useState('')
   const [form, setForm] = useState({
     title: '', description: '', price: '', city: '',
     postalCode: '', availableDate: '', type: 'chambre',
@@ -30,9 +31,9 @@ export default function EditListing() {
           availableDate: d.availableDate ? d.availableDate.split('T')[0] : '',
         })
       })
-      .catch(() => { alert("Impossible de charger l'annonce"); navigate('/listings') })
+      .catch(() => setLoadError("Impossible de charger l'annonce"))
       .finally(() => setLoading(false))
-  }, [id, navigate])
+  }, [id])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -53,6 +54,17 @@ export default function EditListing() {
     <div style={{ minHeight: 'calc(100vh - 56px)', background: '#F4EEE2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Cutive Mono', monospace", fontSize: 14, color: '#6B655A' }}>
       Chargement...
     </div>
+  )
+
+  if (loadError) return (
+    <main style={{ minHeight: 'calc(100vh - 56px)', background: '#F4EEE2', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, fontFamily: 'Karla, system-ui, sans-serif', color: '#2A2723' }}>
+      <div style={{ display: 'grid', gap: 16, justifyItems: 'center' }}>
+        <div role="alert" style={{ background: '#F5E8E5', border: '1px solid #B4472C', color: '#B4472C', fontSize: 14, padding: '10px 14px' }}>{loadError}</div>
+        <button type="button" onClick={() => navigate('/listings')} style={{ padding: '10px 18px', background: 'transparent', border: '1.5px solid #2A2723', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'Karla, sans-serif', color: '#2A2723' }}>
+          Retour aux annonces
+        </button>
+      </div>
+    </main>
   )
 
   return (

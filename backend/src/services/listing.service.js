@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import prisma from '../lib/prisma.js'
 
 const LISTING_CARD_SELECT = {
   id: true,

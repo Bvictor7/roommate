@@ -1,15 +1,23 @@
 import express from 'express'
-import { PrismaClient } from '@prisma/client'
+import prisma from '../lib/prisma.js'
 import auth from '../middleware/auth.js'
+import validate from '../middleware/validate.js'
+import {
+  createColocationSchema,
+  joinColocationSchema,
+  createTaskSchema,
+  updateTaskSchema,
+  createExpenseSchema,
+  createGrocerySchema,
+  updateGrocerySchema,
+} from '../schemas/colocation.schema.js'
 
 const router = express.Router()
-const prisma = new PrismaClient()
 
 // Créer une colocation
-router.post('/', auth, async (req, res, next) => {
+router.post('/', auth, validate(createColocationSchema), async (req, res, next) => {
   try {
     const { name } = req.body
-    if (!name) return res.status(400).json({ message: 'Nom requis' })
 
     const colocation = await prisma.colocation.create({
       data: {
@@ -25,7 +33,7 @@ router.post('/', auth, async (req, res, next) => {
 })
 
 // Rejoindre une colocation via code
-router.post('/join', auth, async (req, res, next) => {
+router.post('/join', auth, validate(joinColocationSchema), async (req, res, next) => {
   try {
     const { inviteCode } = req.body
     const colocation = await prisma.colocation.findUnique({ where: { inviteCode } })
@@ -65,7 +73,7 @@ router.get('/me', auth, async (req, res, next) => {
 })
 
 // --- TASKS ---
-router.post('/:id/tasks', auth, async (req, res, next) => {
+router.post('/:id/tasks', auth, validate(createTaskSchema), async (req, res, next) => {
   try {
     const { title, assignedTo, dueDate } = req.body
     const task = await prisma.task.create({
@@ -75,11 +83,17 @@ router.post('/:id/tasks', auth, async (req, res, next) => {
   } catch (err) { next(err) }
 })
 
-router.patch('/tasks/:taskId', auth, async (req, res, next) => {
+router.patch('/tasks/:taskId', auth, validate(updateTaskSchema), async (req, res, next) => {
   try {
+    const { title, assignedTo, dueDate, status } = req.body
     const task = await prisma.task.update({
       where: { id: req.params.taskId },
-      data: req.body
+      data: {
+        title,
+        assignedTo,
+        status,
+        ...(dueDate !== undefined && { dueDate: dueDate ? new Date(dueDate) : null })
+      }
     })
     res.json(task)
   } catch (err) { next(err) }
@@ -93,11 +107,11 @@ router.delete('/tasks/:taskId', auth, async (req, res, next) => {
 })
 
 // --- EXPENSES ---
-router.post('/:id/expenses', auth, async (req, res, next) => {
+router.post('/:id/expenses', auth, validate(createExpenseSchema), async (req, res, next) => {
   try {
     const { amount, category, description, paidBy } = req.body
     const expense = await prisma.expense.create({
-      data: { amount: parseFloat(amount), category, description, paidBy, colocationId: req.params.id }
+      data: { amount, category, description, paidBy, colocationId: req.params.id }
     })
     res.status(201).json(expense)
   } catch (err) { next(err) }
@@ -111,7 +125,7 @@ router.delete('/expenses/:expenseId', auth, async (req, res, next) => {
 })
 
 // --- GROCERIES ---
-router.post('/:id/groceries', auth, async (req, res, next) => {
+router.post('/:id/groceries', auth, validate(createGrocerySchema), async (req, res, next) => {
   try {
     const { name } = req.body
     const item = await prisma.groceryItem.create({
@@ -121,11 +135,12 @@ router.post('/:id/groceries', auth, async (req, res, next) => {
   } catch (err) { next(err) }
 })
 
-router.patch('/groceries/:itemId', auth, async (req, res, next) => {
+router.patch('/groceries/:itemId', auth, validate(updateGrocerySchema), async (req, res, next) => {
   try {
+    const { name, isBought } = req.body
     const item = await prisma.groceryItem.update({
       where: { id: req.params.itemId },
-      data: req.body
+      data: { name, isBought }
     })
     res.json(item)
   } catch (err) { next(err) }

@@ -1,8 +1,19 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { PrismaClient } from '@prisma/client'
+import prisma from '../lib/prisma.js'
 
-const prisma = new PrismaClient()
+function buildAuthResponse(user) {
+  const token = jwt.sign(
+    { userId: user.id, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: '24h' }
+  )
+
+  return {
+    token,
+    user: { id: user.id, username: user.username, email: user.email, role: user.role }
+  }
+}
 
 export async function register(email, password, username) {
   const existing = await prisma.user.findUnique({ where: { email } })
@@ -17,12 +28,7 @@ export async function register(email, password, username) {
     data: { email, password: hash, username }
   })
 
-  const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '24h' })
-
-  return {
-    token,
-    user: { id: user.id, username: user.username, email: user.email }
-  }
+  return buildAuthResponse(user)
 }
 
 export async function login(email, password) {
@@ -40,17 +46,12 @@ export async function login(email, password) {
     throw error
   }
 
-  const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '24h' })
-
-  return {
-    token,
-    user: { id: user.id, username: user.username, email: user.email }
-  }
+  return buildAuthResponse(user)
 }
 
 export async function getMe(userId) {
   return prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, email: true, username: true }
+    select: { id: true, email: true, username: true, role: true }
   })
 }
