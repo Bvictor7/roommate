@@ -2,6 +2,7 @@ import express from 'express'
 import prisma from '../lib/prisma.js'
 import auth from '../middleware/auth.js'
 import validate from '../middleware/validate.js'
+import { emitToColocation, joinColocationRoom } from '../lib/socket.js'
 import {
   createColocationSchema,
   joinColocationSchema,
@@ -28,6 +29,7 @@ router.post('/', auth, validate(createColocationSchema), async (req, res, next) 
       },
       include: { members: { include: { user: { select: { id: true, username: true, avatar: true } } } } }
     })
+    joinColocationRoom(req.user.userId, colocation.id)
     res.status(201).json(colocation)
   } catch (err) { next(err) }
 })
@@ -47,6 +49,7 @@ router.post('/join', auth, validate(joinColocationSchema), async (req, res, next
     await prisma.colocationMember.create({
       data: { userId: req.user.userId, colocationId: colocation.id }
     })
+    joinColocationRoom(req.user.userId, colocation.id)
     res.json(colocation)
   } catch (err) { next(err) }
 })
@@ -79,6 +82,7 @@ router.post('/:id/tasks', auth, validate(createTaskSchema), async (req, res, nex
     const task = await prisma.task.create({
       data: { title, assignedTo, dueDate: dueDate ? new Date(dueDate) : null, colocationId: req.params.id }
     })
+    emitToColocation(task.colocationId, 'task:created', task)
     res.status(201).json(task)
   } catch (err) { next(err) }
 })
@@ -95,6 +99,7 @@ router.patch('/tasks/:taskId', auth, validate(updateTaskSchema), async (req, res
         ...(dueDate !== undefined && { dueDate: dueDate ? new Date(dueDate) : null })
       }
     })
+    emitToColocation(task.colocationId, 'task:updated', task)
     res.json(task)
   } catch (err) { next(err) }
 })
@@ -113,6 +118,7 @@ router.post('/:id/expenses', auth, validate(createExpenseSchema), async (req, re
     const expense = await prisma.expense.create({
       data: { amount, category, description, paidBy, colocationId: req.params.id }
     })
+    emitToColocation(expense.colocationId, 'expense:created', expense)
     res.status(201).json(expense)
   } catch (err) { next(err) }
 })
@@ -131,6 +137,7 @@ router.post('/:id/groceries', auth, validate(createGrocerySchema), async (req, r
     const item = await prisma.groceryItem.create({
       data: { name, addedBy: req.user.userId, colocationId: req.params.id }
     })
+    emitToColocation(item.colocationId, 'grocery:created', item)
     res.status(201).json(item)
   } catch (err) { next(err) }
 })
@@ -142,6 +149,7 @@ router.patch('/groceries/:itemId', auth, validate(updateGrocerySchema), async (r
       where: { id: req.params.itemId },
       data: { name, isBought }
     })
+    emitToColocation(item.colocationId, 'grocery:updated', item)
     res.json(item)
   } catch (err) { next(err) }
 })
