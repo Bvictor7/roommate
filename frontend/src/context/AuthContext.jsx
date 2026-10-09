@@ -1,6 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react'
-
-const AuthContext = createContext(null)
+import { useState, useEffect, useCallback } from 'react'
+import { AuthContext } from './useAuth'
 
 // Clés d'authentification uniquement : les autres données du localStorage sont conservées
 const AUTH_STORAGE_KEYS = ['token', 'user', 'accessToken', 'refreshToken']
@@ -26,32 +25,24 @@ export function AuthProvider({ children }) {
     setLoading(false)
   }, [])
 
-  const login = (newToken, userData) => {
+  const login = useCallback((newToken, userData) => {
     if (!userData) return console.error("Données utilisateur manquantes");
     
     localStorage.setItem('token', newToken)
     localStorage.setItem('user', JSON.stringify(userData))
     setToken(newToken)
     setUser(userData)
-  }
+  }, [])
 
-  const logout = () => {
+  const logout = useCallback(() => {
     AUTH_STORAGE_KEYS.forEach(key => localStorage.removeItem(key))
     setToken(null)
     setUser(null)
-  }
+  }, [])
 
   return (
     <AuthContext.Provider value={{ user, token, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   )
-}
-
-export const useAuth = () => {
-  const context = useContext(AuthContext)
-  if (!context) {
-    throw new Error("useAuth doit être utilisé à l'intérieur d'un AuthProvider")
-  }
-  return context
 }

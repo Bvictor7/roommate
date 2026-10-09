@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { useAuth } from './context/AuthContext'
+import { useAuth } from './context/useAuth'
 import api from './services/api'
 import TopNav from './components/TopNav'
 import Home from './pages/Home'
