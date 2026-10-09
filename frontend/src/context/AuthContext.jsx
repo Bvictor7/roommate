@@ -2,6 +2,9 @@ import { createContext, useContext, useState, useEffect } from 'react'
 
 const AuthContext = createContext(null)
 
+// Clés d'authentification uniquement : les autres données du localStorage sont conservées
+const AUTH_STORAGE_KEYS = ['token', 'user', 'accessToken', 'refreshToken']
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [token, setToken] = useState(localStorage.getItem('token'))
@@ -33,7 +36,7 @@ export function AuthProvider({ children }) {
   }
 
   const logout = () => {
-    localStorage.clear()
+    AUTH_STORAGE_KEYS.forEach(key => localStorage.removeItem(key))
     setToken(null)
     setUser(null)
   }

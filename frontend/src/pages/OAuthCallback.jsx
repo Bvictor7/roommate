@@ -32,8 +32,8 @@ export default function OAuthCallback() {
   }, [])
 
   return (
-    <main className="min-h-screen bg-[#0f1117] flex items-center justify-center">
-      <p className="text-white/50 text-sm">Connexion en cours...</p>
+    <main style={{ minHeight: '100vh', background: '#F4EEE2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Karla, system-ui, sans-serif', color: '#2A2723' }}>
+      <p style={{ margin: 0, fontFamily: "'Cutive Mono', monospace", fontSize: 14 }}>Connexion en cours...</p>
     </main>
   )
 }
