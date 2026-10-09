@@ -40,6 +40,12 @@ function useHasColocation(user) {
   return result.user === user ? result.status : 'loading'
 }
 
+function RequireAuth({ children }) {
+  const { user } = useAuth()
+  if (!user) return <Navigate to="/login" replace />
+  return children
+}
+
 function RequireColocation({ children }) {
   const { user } = useAuth()
   const status = useHasColocation(user)
@@ -69,9 +75,9 @@ function App() {
         <Route path="/dashboard/*" element={<RequireColocation><Layout><Dashboard /></Layout></RequireColocation>} />
         <Route path="/login" element={<Layout><Login /></Layout>} />
         <Route path="/register" element={<Layout><Register /></Layout>} />
-        <Route path="/create-listing" element={<Layout><CreateListing /></Layout>} />
-        <Route path="/edit-listing/:id" element={<Layout><EditListing /></Layout>} />
-        <Route path="/profile" element={<Layout><Profile /></Layout>} />
+        <Route path="/create-listing" element={<RequireAuth><Layout><CreateListing /></Layout></RequireAuth>} />
+        <Route path="/edit-listing/:id" element={<RequireAuth><Layout><EditListing /></Layout></RequireAuth>} />
+        <Route path="/profile" element={<RequireAuth><Layout><Profile /></Layout></RequireAuth>} />
         <Route path="/oauth/callback" element={<OAuthCallback />} />
         <Route path="/coloc-setup" element={<RequireNoColocation><Layout><ColocationSetup /></Layout></RequireNoColocation>} />
       </Routes>
