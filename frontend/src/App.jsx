@@ -17,6 +17,7 @@ import MentionsLegales from './pages/MentionsLegales'
 import CGU from './pages/CGU'
 import PolitiqueConfidentialite from './pages/PolitiqueConfidentialite'
 import ColocationSetup from './pages/ColocationSetup'
+import Admin from './pages/Admin'
 
 function Layout({ children }) {
   return (
@@ -47,6 +48,12 @@ function useHasColocation(user) {
 function RequireAuth({ children }) {
   const { user } = useAuth()
   if (!user) return <Navigate to="/login" replace />
+  return children
+}
+
+function RequireAdmin({ children }) {
+  const { user } = useAuth()
+  if (user?.role !== 'ADMIN') return <Navigate to="/" replace />
   return children
 }
 
@@ -86,6 +93,7 @@ function App() {
         <Route path="/mentions-legales" element={<Layout><MentionsLegales /></Layout>} />
         <Route path="/cgu" element={<Layout><CGU /></Layout>} />
         <Route path="/politique-confidentialite" element={<Layout><PolitiqueConfidentialite /></Layout>} />
+        <Route path="/admin" element={<RequireAdmin><Layout><Admin /></Layout></RequireAdmin>} />
         <Route path="/coloc-setup" element={<RequireNoColocation><Layout><ColocationSetup /></Layout></RequireNoColocation>} />
       </Routes>
     </Router>
