@@ -12,6 +12,8 @@ import Profile from './pages/Profile'
 import EditListing from './pages/EditListing'
 import Dashboard from './pages/Dashboard'
 import OAuthCallback from './pages/OAuthCallback'
+import MentionsLegales from './pages/MentionsLegales'
+import CGU from './pages/CGU'
 import ColocationSetup from './pages/ColocationSetup'
 
 function Layout({ children }) {
@@ -79,6 +81,8 @@ function App() {
         <Route path="/edit-listing/:id" element={<RequireAuth><Layout><EditListing /></Layout></RequireAuth>} />
         <Route path="/profile" element={<RequireAuth><Layout><Profile /></Layout></RequireAuth>} />
         <Route path="/oauth/callback" element={<OAuthCallback />} />
+        <Route path="/mentions-legales" element={<Layout><MentionsLegales /></Layout>} />
+        <Route path="/cgu" element={<Layout><CGU /></Layout>} />
         <Route path="/coloc-setup" element={<RequireNoColocation><Layout><ColocationSetup /></Layout></RequireNoColocation>} />
       </Routes>
     </Router>
