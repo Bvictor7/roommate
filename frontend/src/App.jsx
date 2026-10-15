@@ -15,6 +15,7 @@ import OAuthCallback from './pages/OAuthCallback'
 import Footer from './components/Footer'
 import MentionsLegales from './pages/MentionsLegales'
 import CGU from './pages/CGU'
+import PolitiqueConfidentialite from './pages/PolitiqueConfidentialite'
 import ColocationSetup from './pages/ColocationSetup'
 
 function Layout({ children }) {
@@ -28,7 +29,6 @@ function Layout({ children }) {
 }
 
 function useHasColocation(user) {
-  // Le résultat est associé à l'utilisateur pour lequel il a été obtenu
   const [result, setResult] = useState({ user: null, status: 'loading' })
 
   useEffect(() => {
@@ -85,6 +85,7 @@ function App() {
         <Route path="/oauth/callback" element={<OAuthCallback />} />
         <Route path="/mentions-legales" element={<Layout><MentionsLegales /></Layout>} />
         <Route path="/cgu" element={<Layout><CGU /></Layout>} />
+        <Route path="/politique-confidentialite" element={<Layout><PolitiqueConfidentialite /></Layout>} />
         <Route path="/coloc-setup" element={<RequireNoColocation><Layout><ColocationSetup /></Layout></RequireNoColocation>} />
       </Routes>
     </Router>
