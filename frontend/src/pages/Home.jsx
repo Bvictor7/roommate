@@ -133,13 +133,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <div style={{ borderTop: '1px solid #2A2723', background: '#F4EEE2' }}>
-        <div style={{ maxWidth: 1160, margin: '0 auto', padding: '16px clamp(14px,3vw,34px) 28px', display: 'flex', flexWrap: 'wrap', gap: '8px 24px', alignItems: 'baseline' }}>
-          <span style={{ fontFamily: 'Newsreader, serif', fontSize: 19, fontWeight: 600 }}>RoomMate</span>
-          <span style={{ fontFamily: "'Cutive Mono', monospace", fontSize: 13, color: '#6B655A', marginLeft: 'auto' }}>Aucun paiement en ligne. Vous vous arrangez entre vous.</span>
-        </div>
-      </div>
     </div>
   )
 }
