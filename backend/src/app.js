@@ -5,6 +5,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
 import morgan from 'morgan'
+import cookieParser from 'cookie-parser'
 import passport from './config/passport.js'
 import authRoutes from './routes/auth.js'
 import listingRoutes from './routes/listings.js'
@@ -20,8 +21,14 @@ Sentry.init({
 
 const app = express()
 
-app.use(cors())
+app.set('trust proxy', 1)
+
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true,
+}))
 app.use(express.json())
+app.use(cookieParser())
 app.use(helmet())
 
 if (process.env.NODE_ENV !== 'test') {
@@ -32,11 +39,15 @@ if (process.env.NODE_ENV !== 'test') {
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 })
 app.use(limiter)
 
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10 })
+const joinLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 5 })
+
 app.use(passport.initialize())
 
-app.use('/api/auth', authRoutes)
-app.use('/api/auth', oauthRoutes)
+app.use('/api/auth', authLimiter, authRoutes)
+app.use('/api/auth', authLimiter, oauthRoutes)
 app.use('/api/listings', listingRoutes)
+app.use('/api/colocation/join', joinLimiter)
 app.use('/api/colocation', colocationRoutes)
 
 app.get('/', (req, res) => {
