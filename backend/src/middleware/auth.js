@@ -14,3 +14,10 @@ const auth = (req, res, next) => {
 }
 
 export default auth
+export const requireAdmin = (req, res, next) => {
+  if (!req.user) return res.status(401).json({ message: 'Non autorisé' })
+  if (req.user.role !== 'ADMIN') {
+    return res.status(403).json({ message: 'Accès réservé aux administrateurs' })
+  }
+  next()
+}
