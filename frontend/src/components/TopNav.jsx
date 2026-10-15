@@ -12,6 +12,7 @@ export default function TopNav() {
     ...(user ? [{ label: 'Mon foyer', path: '/dashboard' }] : []),
     { label: 'Annonces', path: '/listings' },
     ...(user ? [{ label: 'Profil', path: '/profile' }] : []),
+    ...(user?.role === 'ADMIN' ? [{ label: 'Admin', path: '/admin' }] : []),
   ]
 
   const handleLogout = () => {
