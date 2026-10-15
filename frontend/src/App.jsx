@@ -12,15 +12,17 @@ import Profile from './pages/Profile'
 import EditListing from './pages/EditListing'
 import Dashboard from './pages/Dashboard'
 import OAuthCallback from './pages/OAuthCallback'
+import Footer from './components/Footer'
 import MentionsLegales from './pages/MentionsLegales'
 import CGU from './pages/CGU'
 import ColocationSetup from './pages/ColocationSetup'
 
 function Layout({ children }) {
   return (
-    <div style={{ minHeight: '100vh', background: '#F4EEE2' }}>
+    <div style={{ minHeight: '100vh', background: '#F4EEE2', display: 'flex', flexDirection: 'column' }}>
       <TopNav />
-      {children}
+      <div style={{ flex: 1 }}>{children}</div>
+      <Footer />
     </div>
   )
 }
