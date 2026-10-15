@@ -11,6 +11,7 @@ import authRoutes from './routes/auth.js'
 import listingRoutes from './routes/listings.js'
 import oauthRoutes from './routes/oauth.js'
 import colocationRoutes from './routes/colocations.js'
+import adminRoutes from './routes/admin.js'
 import errorHandler from './middleware/errorHandler.js'
 
 Sentry.init({
@@ -49,6 +50,7 @@ app.use('/api/auth', authLimiter, oauthRoutes)
 app.use('/api/listings', listingRoutes)
 app.use('/api/colocation/join', joinLimiter)
 app.use('/api/colocation', colocationRoutes)
+app.use('/api/admin', adminRoutes)
 
 app.get('/', (req, res) => {
   res.json({ message: 'RoomMate API is running' })
