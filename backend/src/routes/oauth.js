@@ -1,8 +1,12 @@
 import express from 'express'
 import passport from '../config/passport.js'
 import jwt from 'jsonwebtoken'
+import { allowedOrigins } from '../lib/origins.js'
 
 const router = express.Router()
+
+// Première URL de FRONTEND_URL = domaine principal du front
+const frontendUrl = allowedOrigins[0]
 
 router.get(
   '/google',
@@ -11,7 +15,7 @@ router.get(
 
 router.get(
   '/google/callback',
-  passport.authenticate('google', { session: false, failureRedirect: '/login' }),
+  passport.authenticate('google', { session: false, failureRedirect: `${frontendUrl}/login` }),
   (req, res) => {
     const token = jwt.sign(
       { userId: req.user.id, role: req.user.role },
@@ -19,7 +23,7 @@ router.get(
       { expiresIn: '24h' }
     )
 
-    res.redirect(`${process.env.FRONTEND_URL}/oauth/callback?token=${token}`)
+    res.redirect(`${frontendUrl}/oauth/callback?token=${token}`)
   }
 )
 
