@@ -1,6 +1,7 @@
 import { Server } from 'socket.io'
 import jwt from 'jsonwebtoken'
 import prisma from './prisma.js'
+import { allowedOrigins } from './origins.js'
 
 export let io = null
 
@@ -8,7 +9,7 @@ const userRoom = (userId) => `user:${userId}`
 
 export function initSocket(httpServer) {
   io = new Server(httpServer, {
-    cors: { origin: process.env.FRONTEND_URL },
+    cors: { origin: allowedOrigins, credentials: true },
   })
 
   // Authentification par JWT à la connexion

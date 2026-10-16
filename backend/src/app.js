@@ -13,6 +13,7 @@ import oauthRoutes from './routes/oauth.js'
 import colocationRoutes from './routes/colocations.js'
 import adminRoutes from './routes/admin.js'
 import errorHandler from './middleware/errorHandler.js'
+import { allowedOrigins } from './lib/origins.js'
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
@@ -25,7 +26,7 @@ const app = express()
 app.set('trust proxy', 1)
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: allowedOrigins,
   credentials: true,
 }))
 app.use(express.json())
