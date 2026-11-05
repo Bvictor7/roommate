@@ -26,7 +26,7 @@ Plateforme de gestion de colocation : recherche d'annonces de logement partagé,
 | Backend | Node.js 22, Express 5, Prisma ORM |
 | Base de données | PostgreSQL 18 |
 | Auth | JWT (access + refresh) + OAuth Google (Passport.js) |
-| Tests | Vitest (31 tests), Playwright (11 E2E) — 42/42 ✅ |
+| Vitest (26 tests), Playwright (11 E2E) — 37/37 
 | CI/CD | GitHub Actions (5 jobs : Lint → Tests → Build → Staging → Prod) |
 | Conteneurisation | Docker distroless gcr.io/distroless/nodejs20-debian12 (281 MB) |
 | Monitoring | Grafana Cloud Synthetic, Sentry (frontend + backend), UptimeRobot |
@@ -94,10 +94,13 @@ cd frontend && npx playwright test --project=chromium
 
 ### Résultats
 
+
 | Suite | Résultat |
 |---|---|
-| Tests unitaires (auth) | 15/15 ✅ |
-| Tests API (listings) | 16/16 ✅ |
+| Tests auth | 7/7 ✅ |
+| Tests listings | 8/8 ✅ |
+| Tests admin | 5/5 ✅ |
+| Tests membres colocation | 6/6 ✅ |
 | Tests E2E | 11/11 ✅ |
 | Couverture totale | 76.66% ✅ |
 
